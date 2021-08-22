@@ -46,9 +46,9 @@ contract ERC20 is IERC20 {
         return true;
     }
 
-    function transferFrom(address from, address to, uint256 amount) external override returns (bool) {
-        allowance[from][msg.sender] -= amount;
-        _transfer(from, to, amount);
+    function transferFrom(address owner, address recipient, uint256 amount) external override returns (bool) {
+        allowance[owner][msg.sender] -= amount;
+        _transfer(owner, recipient, amount);
         return true;
     }
 
@@ -59,25 +59,25 @@ contract ERC20 is IERC20 {
         emit Approval(msg.sender, spender, allowance[msg.sender][spender] = amount);
     }
 
-    function _transfer(address from, address to, uint256 amount) internal {
-        balanceOf[from] -= amount;
-        balanceOf[to]   += amount;
+    function _transfer(address owner, address recipient, uint256 amount) internal {
+        balanceOf[owner]     -= amount;
+        balanceOf[recipient] += amount;
 
-        emit Transfer(from, to, amount);
+        emit Transfer(owner, recipient, amount);
     }
 
-    function _mint(address to, uint256 amount) internal {
-        totalSupply   += amount;
-        balanceOf[to] += amount;
+    function _mint(address recipient, uint256 amount) internal {
+        totalSupply          += amount;
+        balanceOf[recipient] += amount;
 
-        emit Transfer(address(0), to, amount);
+        emit Transfer(address(0), recipient, amount);
     }
 
-    function _burn(address from, uint256 amount) internal {
-        balanceOf[from] -= amount;
-        totalSupply     -= amount;
+    function _burn(address owner, uint256 amount) internal {
+        balanceOf[owner] -= amount;
+        totalSupply      -= amount;
 
-        emit Transfer(from, address(0), amount);
+        emit Transfer(owner, address(0), amount);
     }
 
 }

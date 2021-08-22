@@ -18,7 +18,7 @@ interface IERC20 {
      * @dev Emits an event indicating that one account has set the allowance of another account over their tokens.
      * @param owner   Account that tokens are approved from.
      * @param spender Account that tokens are approved for.
-     * @param amount    Amount of tokens that have been approved.
+     * @param amount  Amount of tokens that have been approved.
      */
     event Approval(address indexed owner, address indexed spender, uint256 amount);
 
@@ -38,18 +38,18 @@ interface IERC20 {
     function decimals() external view returns (uint8);
 
     /**
-     * @dev Returns the amount of tokens in existence.
+     * @dev Returns the total amount of tokens in existence.
      */
     function totalSupply() external view returns (uint256);
 
     /**
-     * @dev   Returns the amount of tokens owned by `account`.
+     * @dev   Returns the amount of tokens owned by a given account.
      * @param account Account that owns the tokens.
      */
     function balanceOf(address account) external view returns (uint256);
 
     /**
-     * @dev   Emits an event indicating that one account has set the allowance of another account over their tokens.
+     * @dev   Function that returns the allowance that one account has given another over their tokens.
      * @param owner   Account that tokens are approved from.
      * @param spender Account that tokens are approved for.
      */
@@ -57,7 +57,7 @@ interface IERC20 {
 
     /**
      * @dev   Function that allows one account to set the allowance of another account over their tokens.
-     * @dev   Emits a {Approval} event.
+     * @dev   Emits an {Approval} event.
      * @param spender Account that tokens are approved for.
      * @param amount  Amount of tokens that have been approved.
      */
@@ -65,22 +65,22 @@ interface IERC20 {
 
     /**
      * @dev   Function that allows one account to increase the allowance of another account over their tokens by a given amount.
-     * @dev   Emits a {Approval} event.
+     * @dev   Emits an {Approval} event.
      * @param spender Account that tokens are approved for.
      * @param amount  Incremental amount of tokens that have been approved.
      */
     function increaseAllowance(address spender, uint256 amount) external returns (bool);
 
     /**
-     * @dev   Function that allows one account to increase the allowance of another account over their tokens by a given amount.
-     * @dev   Emits a {Approval} event.
+     * @dev   Function that allows one account to decrease the allowance of another account over their tokens by a given amount.
+     * @dev   Emits an {Approval} event.
      * @param spender Account that tokens are approved for.
      * @param amount  Decremental amount of tokens that have been approved.
      */
     function decreaseAllowance(address spender, uint256 amount) external returns (bool);
 
     /**
-     * @dev   Moves an amount of tokens from msg.sender to a specified account.
+     * @dev   Moves an amount of tokens from `msg.sender` to a specified account.
      * @dev   Emits a {Transfer} event.
      * @param recipient Account that recieves tokens.
      * @param amount    Amount of tokens that are transferred.
@@ -90,11 +90,11 @@ interface IERC20 {
 
     /**
      * @dev   Moves a pre-approved amount of tokens from a sender to a specified account.
-     * @dev   Emits a {Approval} event.
-     * @param spender   Account that tokens are moving from.
+     * @dev   Emits a {Transfer} event.
+     * @param owner     Account that tokens are moving from.
      * @param recipient Account that recieves tokens.
      * @param amount    Amount of tokens that are transferred.
      */
-    function transferFrom(address spender, address recipient, uint256 amount) external returns (bool);
+    function transferFrom(address owner, address recipient, uint256 amount) external returns (bool);
 
 }
