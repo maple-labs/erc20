@@ -55,7 +55,7 @@ contract ERC20Test is DSTest {
     }
 
     function prove_increaseAllowance(address account, uint256 amount0, uint256 amount1) public {
-        unchecked { if (amount0 + amount1 < amount0) return; }  // Will assert for overflow failures
+        unchecked { if (amount0 + amount1 < amount0) return; }  // Only check non-overflow conditions
         
         assertTrue(token.approve(account, amount0));
         assertTrue(token.increaseAllowance(account, amount1));
@@ -64,7 +64,7 @@ contract ERC20Test is DSTest {
     }
 
     function prove_decreaseAllowance(address account, uint256 amount0, uint256 amount1) public {
-        unchecked { if (amount0 - amount1 > amount0) return; }  // Will assert for overflow failures
+        unchecked { if (amount0 - amount1 > amount0) return; }  // Only check non-overflow conditions
 
         assertTrue(token.approve(account, amount0));
         assertTrue(token.decreaseAllowance(account, amount1));
