@@ -1,4 +1,4 @@
 all    :; dapp build
 clean  :; dapp clean
-test   :; dapp test
+test   :; dapp test --verbosity 2
 deploy :; dapp create Erc20
