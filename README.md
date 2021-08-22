@@ -9,7 +9,7 @@ make test
 ```
 
 ## Acknowledgements
-This code was inspired from the following sources:
+These contracts were inspired by and/or directly modified from the following sources:
 - [Solmate](https://github.com/Rari-Capital/solmate)
 - [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts)
 - [DSS](https://github.com/makerdao/dss)
