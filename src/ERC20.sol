@@ -3,7 +3,7 @@ pragma solidity ^0.8.6;
 
 import { IERC20 } from "./IERC20.sol";
 
-/// @title  Modern and gas efficient ERC-20 implementation. 
+/// @title Modern and gas efficient ERC-20 implementation. 
 contract ERC20 is IERC20 {
 
     string public override name;
