@@ -2,6 +2,7 @@
 pragma solidity ^0.8.6;
 
 contract InvariantTest {
+    
     address[] private targetContracts_;
 
     function targetContracts() public view returns (address[] memory) {
@@ -12,4 +13,5 @@ contract InvariantTest {
     function addTargetContract(address newTargetContract) internal {
         targetContracts_.push(newTargetContract);
     }
+
 }
