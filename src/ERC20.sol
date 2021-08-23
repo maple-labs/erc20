@@ -23,9 +23,9 @@ contract ERC20 is IERC20 {
         decimals = _decimals;
     }
 
-    /*********************************/
-    /*** ERC-20 External Functions ***/
-    /*********************************/
+    /**************************/
+    /*** External Functions ***/
+    /**************************/
     function approve(address spender, uint256 amount) external override returns (bool) {
         _approve(spender, amount);
         return true;
@@ -52,9 +52,9 @@ contract ERC20 is IERC20 {
         return true;
     }
 
-    /*********************************/
-    /*** ERC-20 Internal Functions ***/
-    /*********************************/
+    /**************************/
+    /*** Internal Functions ***/
+    /**************************/
     function _approve(address spender, uint256 amount) internal {
         emit Approval(msg.sender, spender, allowance[msg.sender][spender] = amount);
     }

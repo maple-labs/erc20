@@ -1,4 +1,7 @@
-all    :; dapp build
-clean  :; dapp clean
-test   :; dapp test --verbosity 2
-deploy :; dapp create Erc20
+all     :; dapp build
+prod    :; ./build.sh -c ./config/prod.json
+dev     :; ./build.sh -c ./config/dev.json
+ci      :; ./build.sh -c ./config/ci.json
+clean   :; dapp clean
+test    :; ./test.sh
+release :; ./release.sh

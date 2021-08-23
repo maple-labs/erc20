@@ -1,0 +1,29 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "src/ERC20.sol": {
+      "urls": ["src/ERC20.sol"]
+    },
+    "src/test/ERC20.t.sol": {
+      "urls": ["src/test/ERC20.t.sol"]
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    }
+  }
+}
