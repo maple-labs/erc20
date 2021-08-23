@@ -3,9 +3,9 @@ pragma solidity ^0.8.6;
 
 import { DSTest } from "../../lib/ds-test/src/test.sol";
 
-import { ERC20User }     from "./ERC20User.sol";
-import { InvariantTest } from "./InvariantTest.sol";
-import { MockERC20 }     from "./MockERC20.sol";
+import { ERC20User }     from "./accounts/ERC20User.sol";
+import { MockERC20 }     from "./mocks/MockERC20.sol";
+import { InvariantTest } from "./utils/InvariantTest.sol";
 
 contract ERC20Test is DSTest {
     

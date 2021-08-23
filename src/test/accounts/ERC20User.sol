@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.6;
 
-import { ERC20 } from "../ERC20.sol";
+import { ERC20 } from "../../ERC20.sol";
 
 contract ERC20User {
 
@@ -11,6 +11,7 @@ contract ERC20User {
         token = _token;
     }
 
+    // Add trys
     function approve(address dst, uint256 amt) external {
         token.approve(dst, amt);
     }
