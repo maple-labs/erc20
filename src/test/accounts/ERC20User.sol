@@ -11,17 +11,34 @@ contract ERC20User {
         token = _token;
     }
 
-    // Add trys
-    function approve(address dst, uint256 amt) external {
-        token.approve(dst, amt);
+    /************************/
+    /*** Direct Functions ***/
+    /************************/
+    function erc20_approve(address recipient, uint256 amount) external {
+        token.approve(recipient, amount);
     }
 
-    function transfer(address dst, uint256 amt) external {
-        token.transfer(dst, amt);
+    function erc20_transfer(address recipient, uint256 amount) external {
+        token.transfer(recipient, amount);
     }
 
-    function transferFrom( address src, address dst, uint256 amt) external {
-        token.transferFrom(src, dst, amt);
+    function erc20_transferFrom(address owner, address recipient, uint256 amount) external {
+        token.transferFrom(owner, recipient, amount);
+    }
+
+    /************************/
+    /*** Try Functions ***/
+    /************************/
+    function try_erc20_approve(address recipient, uint256 amount) external {
+        token.approve(recipient, amount);
+    }
+
+    function try_erc20_transfer(address recipient, uint256 amount) external {
+        token.transfer(recipient, amount);
+    }
+
+    function try_erc20_transferFrom( address owner, address recipient, uint256 amount) external {
+        token.transferFrom(owner, recipient, amount);
     }
 
 }

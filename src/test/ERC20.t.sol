@@ -24,11 +24,11 @@ contract ERC20Test is DSTest {
     }
 
     function test_metadata(string memory name, string memory symbol, uint8 decimals) public {
-        MockERC20 tkn = new MockERC20(name, symbol, decimals);
+        MockERC20 mockToken = new MockERC20(name, symbol, decimals);
 
-        assertEq(tkn.name(),     name);
-        assertEq(tkn.symbol(),   symbol);
-        assertEq(tkn.decimals(), decimals);
+        assertEq(mockToken.name(),     name);
+        assertEq(mockToken.symbol(),   symbol);
+        assertEq(mockToken.decimals(), decimals);
     }
 
     function prove_mint(address account, uint256 amount) public {
@@ -93,7 +93,7 @@ contract ERC20Test is DSTest {
         ERC20User owner = new ERC20User(token);
 
         token.mint(address(owner), amount);
-        owner.approve(self, approval);
+        owner.erc20_approve(self, approval);
 
         assertTrue(token.transferFrom(address(owner), to, amount));
 
@@ -136,7 +136,7 @@ contract ERC20Test is DSTest {
         ERC20User account = new ERC20User(token);
 
         token.mint(address(account), mintAmount);
-        account.transfer(to, sendAmount);
+        account.erc20_transfer(to, sendAmount);
     }
 
     function proveFail_transferFrom_insufficientAllowance(address to, uint256 approval, uint256 amount) public {
@@ -145,7 +145,7 @@ contract ERC20Test is DSTest {
         ERC20User owner = new ERC20User(token);
 
         token.mint(address(owner), amount);
-        owner.approve(self, approval);
+        owner.erc20_approve(self, approval);
         token.transferFrom(address(owner), to, amount);
     }
 
@@ -155,7 +155,7 @@ contract ERC20Test is DSTest {
         ERC20User owner = new ERC20User(token);
 
         token.mint(address(owner), mintAmount);
-        owner.approve(self, sendAmount);
+        owner.erc20_approve(self, sendAmount);
         token.transferFrom(address(owner), to, sendAmount);
     }
 
