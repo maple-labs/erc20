@@ -16,7 +16,7 @@ build=$([ -z "$build" ] && echo "1" || echo "$build")
 config=$([ -z "$config" ] && echo "./config/dev.json" || echo "$config")
 skip_build=$([ "$build" == "0" ] && echo "1" || echo "0")
 
-export DAPP_SOLC_VERSION=0.8.6
+export DAPP_SOLC_VERSION=0.8.7
 export DAPP_STANDARD_JSON=$config
 
 if [ "$skip_build" = "1" ]; then export DAPP_SKIP_BUILD=1; fi

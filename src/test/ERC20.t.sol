@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.6;
+pragma solidity ^0.8.7;
 
 import { DSTest } from "../../lib/ds-test/src/test.sol";
 
@@ -90,10 +90,10 @@ contract ERC20Test is DSTest {
     function prove_transferFrom(address to, uint256 approval, uint256 amount) public {
         if (amount > approval) return; // Owner must approve for more than amount
 
-        ERC20User owner = new ERC20User(token);
+        ERC20User owner = new ERC20User();
 
         token.mint(address(owner), amount);
-        owner.erc20_approve(self, approval);
+        owner.erc20_approve(address(token), self, approval);
 
         assertTrue(token.transferFrom(address(owner), to, amount));
 
@@ -133,29 +133,29 @@ contract ERC20Test is DSTest {
     function proveFail_transfer_insufficientBalance(address to, uint256 mintAmount, uint256 sendAmount) public {
         require(mintAmount < sendAmount);
 
-        ERC20User account = new ERC20User(token);
+        ERC20User account = new ERC20User();
 
         token.mint(address(account), mintAmount);
-        account.erc20_transfer(to, sendAmount);
+        account.erc20_transfer(address(token), to, sendAmount);
     }
 
     function proveFail_transferFrom_insufficientAllowance(address to, uint256 approval, uint256 amount) public {
         require(approval < amount);
 
-        ERC20User owner = new ERC20User(token);
+        ERC20User owner = new ERC20User();
 
         token.mint(address(owner), amount);
-        owner.erc20_approve(self, approval);
+        owner.erc20_approve(address(token), self, approval);
         token.transferFrom(address(owner), to, amount);
     }
 
     function proveFail_transferFrom_insufficientBalance(address to, uint256 mintAmount, uint256 sendAmount) public {
         require(mintAmount < sendAmount);
 
-        ERC20User owner = new ERC20User(token);
+        ERC20User owner = new ERC20User();
 
         token.mint(address(owner), mintAmount);
-        owner.erc20_approve(self, sendAmount);
+        owner.erc20_approve(address(token), self, sendAmount);
         token.transferFrom(address(owner), to, sendAmount);
     }
 

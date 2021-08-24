@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.6;
+pragma solidity ^0.8.7;
 
-import { IERC20 } from "./IERC20.sol";
+import { IERC20 } from "./interfaces/IERC20.sol";
 
 /// @title Modern and gas efficient ERC-20 implementation. 
 contract ERC20 is IERC20 {
