@@ -1,0 +1,8 @@
+name: erc20
+version: 1.0.0
+source: src
+packages:
+  - path: src/ERC20.sol
+    contractName: ERC20
+    customChecksum: 0x98d4afd18b750d8da28fe9c2baff010a76336cd20c085c15457a9f599de21aec
+customDescription: ERC-20 Artifacts and ABIs
