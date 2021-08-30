@@ -15,6 +15,7 @@ jobs:
           command: |
             GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git submodule update --init --recursive
             ./test.sh -c ./config/ci.json
+          no_output_timeout: 60m
 workflows:
   version: 2
   test_all:

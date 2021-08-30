@@ -54,24 +54,6 @@ contract ERC20Test is DSTest {
         assertEq(token.allowance(self, account), amount);
     }
 
-    function prove_increaseAllowance(address account, uint256 amount0, uint256 amount1) public {
-        unchecked { if (amount0 + amount1 < amount0) return; }  // Only check non-overflow conditions
-        
-        assertTrue(token.approve(account, amount0));
-        assertTrue(token.increaseAllowance(account, amount1));
-
-        assertEq(token.allowance(self, account), amount0 + amount1);
-    }
-
-    function prove_decreaseAllowance(address account, uint256 amount0, uint256 amount1) public {
-        unchecked { if (amount0 - amount1 > amount0) return; }  // Only check non-overflow conditions
-
-        assertTrue(token.approve(account, amount0));
-        assertTrue(token.decreaseAllowance(account, amount1));
-
-        assertEq(token.allowance(self, account), amount0 - amount1);
-    }
-
     function prove_transfer(address account, uint256 amount) public {
         token.mint(self, amount);
 
@@ -109,25 +91,6 @@ contract ERC20Test is DSTest {
             assertEq(token.balanceOf(address(owner)), 0);
             assertEq(token.balanceOf(to), amount);
         }
-    }
-
-    function proveFail_increaseAllowance_overflow(address account, uint256 amount0, uint256 amount1) public {
-        unchecked { require(amount0 + amount1 < amount0); }  // Only check overflow conditions
-
-        assertTrue(token.approve(account, amount0));
-        assertTrue(token.increaseAllowance(account, amount1));
-
-        assertEq(token.allowance(self, account), amount0 + amount1);
-    }
-
-    function proveFail_decreaseAllowance_overflow(address account, uint256 amount0, uint256 amount1) public {
-        unchecked { require(amount0 - amount1 > amount0); }  // Only check overflow conditions
-
-        assertTrue(token.approve(account, amount0));
-        assertTrue(token.decreaseAllowance(account, amount1));
-
-        assertEq(token.allowance(self, account), amount0 - amount1);
-        assertTrue(false);
     }
 
     function proveFail_transfer_insufficientBalance(address to, uint256 mintAmount, uint256 sendAmount) public {

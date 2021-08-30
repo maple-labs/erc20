@@ -62,22 +62,6 @@ interface IERC20 {
     function approve(address spender, uint256 amount) external returns (bool);
 
     /**
-     * @dev   Function that allows one account to increase the allowance of another account over their tokens by a given amount.
-     * @dev   Emits an {Approval} event.
-     * @param spender Account that tokens are approved for.
-     * @param amount  Incremental amount of tokens that have been approved.
-     */
-    function increaseAllowance(address spender, uint256 amount) external returns (bool);
-
-    /**
-     * @dev   Function that allows one account to decrease the allowance of another account over their tokens by a given amount.
-     * @dev   Emits an {Approval} event.
-     * @param spender Account that tokens are approved for.
-     * @param amount  Decremental amount of tokens that have been approved.
-     */
-    function decreaseAllowance(address spender, uint256 amount) external returns (bool);
-
-    /**
      * @dev   Moves an amount of tokens from `msg.sender` to a specified account.
      * @dev   Emits a {Transfer} event.
      * @param recipient Account that recieves tokens.
