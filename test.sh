@@ -11,7 +11,7 @@ do
     esac
 done
 
-runs=$([ -z "$runs" ] && echo "100" || echo "$runs")
+runs=$([ -z "$runs" ] && echo "1" || echo "$runs")
 build=$([ -z "$build" ] && echo "1" || echo "$build")
 config=$([ -z "$config" ] && echo "./config/dev.json" || echo "$config")
 skip_build=$([ "$build" == "0" ] && echo "1" || echo "0")
@@ -24,6 +24,6 @@ if [ "$skip_build" = "1" ]; then export DAPP_SKIP_BUILD=1; fi
 
 if [ -z "$test" ]; then match="[src/test/*.t.sol]"; dapp_test_verbosity=1; else match=$test; dapp_test_verbosity=2; fi
 
-echo LANG=C.UTF-8 dapp test --match "$match" --rpc-url "$ETH_RPC_URL" --verbosity $dapp_test_verbosity --fuzz-runs $runs
+echo LANG=C.UTF-8 dapp test --match "$match" --verbosity $dapp_test_verbosity --fuzz-runs $runs
 
-LANG=C.UTF-8 dapp test --match "$match" --rpc-url "$ETH_RPC_URL" --verbosity $dapp_test_verbosity --fuzz-runs $runs; 
+LANG=C.UTF-8 dapp test --match "$match" --verbosity $dapp_test_verbosity --fuzz-runs $runs
