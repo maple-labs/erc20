@@ -73,6 +73,7 @@ interface IERC20 {
     /**
      * @dev   Moves a pre-approved amount of tokens from a sender to a specified account.
      * @dev   Emits a {Transfer} event.
+     * @dev   Emits an {Approval} event.
      * @param owner     Account that tokens are moving from.
      * @param recipient Account that recieves tokens.
      * @param amount    Amount of tokens that are transferred.
