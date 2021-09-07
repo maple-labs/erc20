@@ -31,7 +31,7 @@ contract ERC20 is IERC20 {
     /*** External Functions ***/
     /**************************/
     function approve(address spender, uint256 amount) external override returns (bool) {
-        _approve(spender, amount);
+        _approve(msg.sender, spender, amount);
         return true;
     }
 
@@ -41,7 +41,7 @@ contract ERC20 is IERC20 {
     }
 
     function transferFrom(address owner, address recipient, uint256 amount) external override returns (bool) {
-        allowance[owner][msg.sender] -= amount;
+        _approve(owner, msg.sender, allowance[owner][msg.sender] - amount);
         _transfer(owner, recipient, amount);
         return true;
     }
@@ -49,8 +49,8 @@ contract ERC20 is IERC20 {
     /**************************/
     /*** Internal Functions ***/
     /**************************/
-    function _approve(address spender, uint256 amount) internal {
-        emit Approval(msg.sender, spender, allowance[msg.sender][spender] = amount);
+    function _approve(address owner, address spender, uint256 amount) internal {
+        emit Approval(owner, spender, allowance[owner][spender] = amount);
     }
 
     function _transfer(address owner, address recipient, uint256 amount) internal {
