@@ -5,7 +5,7 @@ import { IERC20 } from "./interfaces/IERC20.sol";
 
 /**
  * @title Modern and gas efficient ERC-20 implementation. 
- * @dev   Code taken from https://github.com/maple-labs/erc-20
+ * @dev   Code taken from https://github.com/maple-labs/erc20
  * @dev   Acknowledgements to Solmate, OpenZeppelin, and DSS for inspiring this code.
  */
 contract ERC20 is IERC20 {
