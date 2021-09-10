@@ -1,6 +1,8 @@
 # ERC-20
 
-**DISCLAIMER: This code has NOT been externally audited and is actively being developed. Please do not use in production.**
+[![CircleCI](https://circleci.com/gh/maple-labs/erc20/tree/main.svg?style=svg)](https://circleci.com/gh/maple-labs/erc20/tree/main) [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+
+**DISCLAIMER: This code has NOT been externally audited and is actively being developed. Please do not use in production without taking the appropriate steps to ensure maximum security.**
 
 Basic ERC-20 contract designed to be inherited and extended. Leveraging native overflow checks in solc 0.8 to simplify ERC-20 implementation. It should be noted that this ERC-20 implementation does not include some functionality that is commonly used in other tokens, such as:
 - `address(0)` checks on `_transfer`
@@ -24,6 +26,11 @@ These contracts were inspired by and/or directly modified from the following sou
 - [Solmate](https://github.com/Rari-Capital/solmate)
 - [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts)
 - [DSS](https://github.com/makerdao/dss)
+
+## About Maple
+Maple is a decentralized corporate credit market. Maple provides capital to institutional borrowers through globally accessible fixed-income yield opportunities.
+
+For all technical documentation related to the Maple protocol, please refer to the GitHub [wiki](https://github.com/maple-labs/maple-core/wiki).
 
 ---
 
