@@ -3,15 +3,15 @@ pragma solidity ^0.8.7;
 
 contract InvariantTest {
     
-    address[] private targetContracts_;
+    address[] private _targetContracts;
 
-    function targetContracts() public view returns (address[] memory) {
-        require(targetContracts_.length > 0, "NO_TARGET_CONTRACTS");
-        return targetContracts_;
+    function targetContracts() public view returns (address[] memory targetContracts_) {
+        require(_targetContracts.length > 0, "NO_TARGET_CONTRACTS");
+        return _targetContracts;
     }
 
-    function addTargetContract(address newTargetContract) internal {
-        targetContracts_.push(newTargetContract);
+    function _addTargetContract(address newTargetContract_) internal {
+        _targetContracts.push(newTargetContract_);
     }
 
 }

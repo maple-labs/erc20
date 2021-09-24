@@ -4,136 +4,135 @@ pragma solidity ^0.8.7;
 import { DSTest } from "../../lib/ds-test/src/test.sol";
 
 import { ERC20User }     from "./accounts/ERC20User.sol";
-import { MockERC20 }     from "./mocks/MockERC20.sol";
 import { InvariantTest } from "./utils/InvariantTest.sol";
+import { MockERC20 }     from "./mocks/MockERC20.sol";
 
 contract ERC20Test is DSTest {
     
-    MockERC20 token;
+    MockERC20 internal token;
 
     address internal immutable self = address(this);
 
-    function setUp() public {
+    function setUp() external {
         token = new MockERC20("Token", "TKN", 18);
     }
 
-    function invariant_metadata() public {
+    function invariant_metadata() external {
+        assertEq(token.decimals(), 18);
         assertEq(token.name(),     "Token");
         assertEq(token.symbol(),   "TKN");
-        assertEq(token.decimals(), 18);
     }
 
-    function test_metadata(string memory name, string memory symbol, uint8 decimals) public {
-        MockERC20 mockToken = new MockERC20(name, symbol, decimals);
+    function test_metadata(string memory name_, string memory symbol_, uint8 decimals_) external {
+        MockERC20 mockToken = new MockERC20(name_, symbol_, decimals_);
 
-        assertEq(mockToken.name(),     name);
-        assertEq(mockToken.symbol(),   symbol);
-        assertEq(mockToken.decimals(), decimals);
+        assertEq(mockToken.decimals(), decimals_);
+        assertEq(mockToken.name(),     name_);
+        assertEq(mockToken.symbol(),   symbol_);
     }
 
-    function prove_mint(address account, uint256 amount) public {
-        token.mint(account, amount);
+    function prove_mint(address account_, uint256 amount_) external {
+        token.mint(account_, amount_);
 
-        assertEq(token.totalSupply(),      amount);
-        assertEq(token.balanceOf(account), amount);
+        assertEq(token.balanceOf(account_), amount_);
+        assertEq(token.totalSupply(),       amount_);
     }
 
-    function prove_burn(address account, uint256 amount0, uint256 amount1) public {
-        if (amount1 > amount0) return; // Mint amount must exceed burn amount
+    function prove_burn(address account_, uint256 amount0_, uint256 amount1_) external {
+        if (amount1_ > amount0_) return;  // Mint amount must exceed burn amount
 
-        token.mint(account, amount0);
-        token.burn(account, amount1);
+        token.mint(account_, amount0_);
+        token.burn(account_, amount1_);
 
-        assertEq(token.totalSupply(),      amount0 - amount1);
-        assertEq(token.balanceOf(account), amount0 - amount1);
+        assertEq(token.balanceOf(account_), amount0_ - amount1_);
+        assertEq(token.totalSupply(),       amount0_ - amount1_);
     }
 
-    function prove_approve(address account, uint256 amount) public {
-        assertTrue(token.approve(account, amount));
+    function prove_approve(address account_, uint256 amount_) external {
+        assertTrue(token.approve(account_, amount_));
 
-        assertEq(token.allowance(self, account), amount);
+        assertEq(token.allowance(self, account_), amount_);
     }
 
-    function prove_transfer(address account, uint256 amount) public {
-        token.mint(self, amount);
+    function prove_transfer(address account_, uint256 amount_) external {
+        token.mint(self, amount_);
 
-        assertTrue(token.transfer(account, amount));
+        assertTrue(token.transfer(account_, amount_));
 
-        assertEq(token.totalSupply(), amount);
+        assertEq(token.totalSupply(), amount_);
 
-        if (self == account) {
-            assertEq(token.balanceOf(self), amount);
+        if (self == account_) {
+            assertEq(token.balanceOf(self), amount_);
         } else {
             assertEq(token.balanceOf(self),    0);
-            assertEq(token.balanceOf(account), amount);
+            assertEq(token.balanceOf(account_), amount_);
         }
     }
 
-    function prove_transferFrom(address to, uint256 approval, uint256 amount) public {
-        if (amount > approval) return; // Owner must approve for more than amount
+    function prove_transferFrom(address recipient_, uint256 approval_, uint256 amount_) external {
+        if (amount_ > approval_) return;  // Owner must approve for more than amount
 
         ERC20User owner = new ERC20User();
 
-        token.mint(address(owner), amount);
-        owner.erc20_approve(address(token), self, approval);
+        token.mint(address(owner), amount_);
+        owner.erc20_approve(address(token), self, approval_);
 
-        assertTrue(token.transferFrom(address(owner), to, amount));
+        assertTrue(token.transferFrom(address(owner), recipient_, amount_));
 
-        assertEq(token.totalSupply(), amount);
+        assertEq(token.totalSupply(), amount_);
 
-        approval = address(owner) == self ? approval : approval - amount;
+        approval_ = address(owner) == self ? approval_ : approval_ - amount_;
 
-        assertEq(token.allowance(address(owner), self), approval);
+        assertEq(token.allowance(address(owner), self), approval_);
 
-        if (address(owner) == to) {
-            assertEq(token.balanceOf(address(owner)), amount);
+        if (address(owner) == recipient_) {
+            assertEq(token.balanceOf(address(owner)), amount_);
         } else {
             assertEq(token.balanceOf(address(owner)), 0);
-            assertEq(token.balanceOf(to), amount);
+            assertEq(token.balanceOf(recipient_), amount_);
         }
     }
 
-    function proveFail_transfer_insufficientBalance(address to, uint256 mintAmount, uint256 sendAmount) public {
-        require(mintAmount < sendAmount);
+    function proveFail_transfer_insufficientBalance(address recipient_, uint256 mintAmount_, uint256 sendAmount_) external {
+        require(mintAmount_ < sendAmount_);
 
         ERC20User account = new ERC20User();
 
-        token.mint(address(account), mintAmount);
-        account.erc20_transfer(address(token), to, sendAmount);
+        token.mint(address(account), mintAmount_);
+        account.erc20_transfer(address(token), recipient_, sendAmount_);
     }
 
-    function proveFail_transferFrom_insufficientAllowance(address to, uint256 approval, uint256 amount) public {
-        require(approval < amount);
+    function proveFail_transferFrom_insufficientAllowance(address recipient_, uint256 approval_, uint256 amount_) external {
+        require(approval_ < amount_);
 
         ERC20User owner = new ERC20User();
 
-        token.mint(address(owner), amount);
-        owner.erc20_approve(address(token), self, approval);
-        token.transferFrom(address(owner), to, amount);
+        token.mint(address(owner), amount_);
+        owner.erc20_approve(address(token), self, approval_);
+        token.transferFrom(address(owner), recipient_, amount_);
     }
 
-    function proveFail_transferFrom_insufficientBalance(address to, uint256 mintAmount, uint256 sendAmount) public {
-        require(mintAmount < sendAmount);
+    function proveFail_transferFrom_insufficientBalance(address recipient_, uint256 mintAmount_, uint256 sendAmount_) external {
+        require(mintAmount_ < sendAmount_);
 
         ERC20User owner = new ERC20User();
 
-        token.mint(address(owner), mintAmount);
-        owner.erc20_approve(address(token), self, sendAmount);
-        token.transferFrom(address(owner), to, sendAmount);
+        token.mint(address(owner), mintAmount_);
+        owner.erc20_approve(address(token), self, sendAmount_);
+        token.transferFrom(address(owner), recipient_, sendAmount_);
     }
 
 }
 
 contract ERC20Invariants is DSTest, InvariantTest {
 
-    BalanceSum balanceSum;
+    BalanceSum internal balanceSum;
 
-    function setUp() public {
-        balanceSum = new BalanceSum();
-        addTargetContract(address(balanceSum));
+    function setUp() external {
+        _addTargetContract(address(balanceSum = new BalanceSum()));
     }
 
-    function invariant_balanceSum() public {
+    function invariant_balanceSum() external {
         assertEq(balanceSum.token().totalSupply(), balanceSum.sum());
     }
 
@@ -145,26 +144,26 @@ contract BalanceSum {
 
     uint256 public sum;
 
-    function mint(address account, uint256 amount) external {
-        token.mint(account, amount);
-        sum += amount;
+    function mint(address account_, uint256 amount_) external {
+        token.mint(account_, amount_);
+        sum += amount_;
     }
 
-    function burn(address account, uint256 amount) external {
-        token.burn(account, amount);
-        sum -= amount;
+    function burn(address account_, uint256 amount_) external {
+        token.burn(account_, amount_);
+        sum -= amount_;
     }
 
-    function approve(address dst, uint256 amount) external {
-        token.approve(dst, amount);
+    function approve(address spender_, uint256 amount_) external {
+        token.approve(spender_, amount_);
     }
 
-    function transferFrom(address src, address dst, uint256 amount) external {
-        token.transferFrom(src, dst, amount);
+    function transferFrom(address owner_, address recipient_, uint256 amount_) external {
+        token.transferFrom(owner_, recipient_, amount_);
     }
 
-    function transfer(address dst, uint256 amount) external {
-        token.transfer(dst, amount);
+    function transfer(address recipient_, uint256 amount_) external {
+        token.transfer(recipient_, amount_);
     }
 
 }

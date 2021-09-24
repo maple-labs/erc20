@@ -1,19 +1,17 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.7;
 
+import { IERC20StorageLayout } from "./IERC20StorageLayout.sol";
+
 /// @title Interface of the ERC20 standard as defined in the EIP.
-interface IERC20 {
+interface IERC20 is IERC20StorageLayout {
+
+    /**************/
+    /*** Events ***/
+    /**************/
 
     /**
-     * @dev Emits an event indicating that tokens have moved from one account to another.
-     * @param from  Account that tokens have moved from.
-     * @param to    Account that tokens have moved to.
-     * @param amount Amount of tokens that have been transferred.
-     */
-    event Transfer(address indexed from, address indexed to, uint256 amount);
-
-    /**
-     * @dev Emits an event indicating that one account has set the allowance of another account over their tokens.
+     * @dev   Emits an event indicating that one account has set the allowance of another account over their tokens.
      * @param owner   Account that tokens are approved from.
      * @param spender Account that tokens are approved for.
      * @param amount  Amount of tokens that have been approved.
@@ -21,37 +19,16 @@ interface IERC20 {
     event Approval(address indexed owner, address indexed spender, uint256 amount);
 
     /**
-     * @dev Returns the name of the token.
+     * @dev   Emits an event indicating that tokens have moved from one account to another.
+     * @param from  Account that tokens have moved from.
+     * @param to    Account that tokens have moved to.
+     * @param amount Amount of tokens that have been transferred.
      */
-    function name() external view returns (string memory);
+    event Transfer(address indexed from, address indexed to, uint256 amount);
 
-    /**
-     * @dev Returns the symbol of the token.
-     */
-    function symbol() external view returns (string memory);
-
-    /**
-     * @dev Returns the decimal precision used by the token.
-     */
-    function decimals() external view returns (uint8);
-
-    /**
-     * @dev Returns the total amount of tokens in existence.
-     */
-    function totalSupply() external view returns (uint256);
-
-    /**
-     * @dev   Returns the amount of tokens owned by a given account.
-     * @param account Account that owns the tokens.
-     */
-    function balanceOf(address account) external view returns (uint256);
-
-    /**
-     * @dev   Function that returns the allowance that one account has given another over their tokens.
-     * @param owner   Account that tokens are approved from.
-     * @param spender Account that tokens are approved for.
-     */
-    function allowance(address owner, address spender) external view returns (uint256);
+    /*****************************************/
+    /*** External State-Changing Functions ***/
+    /*****************************************/
 
     /**
      * @dev   Function that allows one account to set the allowance of another account over their tokens.
