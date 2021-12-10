@@ -4,7 +4,7 @@ pragma solidity ^0.8.7;
 import { IERC20 } from "./interfaces/IERC20.sol";
 
 /**
- * @title Modern and gas efficient ERC-20 implementation. 
+ * @title Modern and gas efficient ERC-20 implementation.
  * @dev   Code taken from https://github.com/maple-labs/erc20
  * @dev   Acknowledgements to Solmate, OpenZeppelin, and DSS for inspiring this code.
  */
@@ -21,59 +21,59 @@ contract ERC20 is IERC20 {
 
     mapping(address => mapping(address => uint256)) public override allowance;
 
-    constructor(string memory _name, string memory _symbol, uint8 _decimals) {
-        name     = _name;
-        symbol   = _symbol;
-        decimals = _decimals;
+    constructor(string memory name_, string memory symbol_, uint8 decimals_) {
+        name     = name_;
+        symbol   = symbol_;
+        decimals = decimals_;
     }
 
     /**************************/
     /*** External Functions ***/
     /**************************/
-    
-    function approve(address spender, uint256 amount) external override returns (bool) {
-        _approve(msg.sender, spender, amount);
+
+    function approve(address spender_, uint256 amount_) external override returns (bool success_) {
+        _approve(msg.sender, spender_, amount_);
         return true;
     }
 
-    function transfer(address to, uint256 amount) external override returns (bool) {
-        _transfer(msg.sender, to, amount);
+    function transfer(address to_, uint256 amount_) external override returns (bool success_) {
+        _transfer(msg.sender, to_, amount_);
         return true;
     }
 
-    function transferFrom(address owner, address recipient, uint256 amount) external override returns (bool) {
-        _approve(owner, msg.sender, allowance[owner][msg.sender] - amount);
-        _transfer(owner, recipient, amount);
+    function transferFrom(address owner_, address recipient_, uint256 amount_) external override returns (bool success_) {
+        _approve(owner_, msg.sender, allowance[owner_][msg.sender] - amount_);
+        _transfer(owner_, recipient_, amount_);
         return true;
     }
 
     /**************************/
     /*** Internal Functions ***/
     /**************************/
-    
-    function _approve(address owner, address spender, uint256 amount) internal {
-        emit Approval(owner, spender, allowance[owner][spender] = amount);
+
+    function _approve(address owner_, address spender_, uint256 amount_) internal {
+        emit Approval(owner_, spender_, allowance[owner_][spender_] = amount_);
     }
 
-    function _transfer(address owner, address recipient, uint256 amount) internal {
-        balanceOf[owner]     -= amount;
-        balanceOf[recipient] += amount;
+    function _transfer(address owner_, address recipient_, uint256 amount_) internal {
+        balanceOf[owner_]     -= amount_;
+        balanceOf[recipient_] += amount_;
 
-        emit Transfer(owner, recipient, amount);
+        emit Transfer(owner_, recipient_, amount_);
     }
 
-    function _mint(address recipient, uint256 amount) internal {
-        totalSupply          += amount;
-        balanceOf[recipient] += amount;
+    function _mint(address recipient_, uint256 amount_) internal {
+        totalSupply           += amount_;
+        balanceOf[recipient_] += amount_;
 
-        emit Transfer(address(0), recipient, amount);
+        emit Transfer(address(0), recipient_, amount_);
     }
 
-    function _burn(address owner, uint256 amount) internal {
-        balanceOf[owner] -= amount;
-        totalSupply      -= amount;
+    function _burn(address owner_, uint256 amount_) internal {
+        balanceOf[owner_] -= amount_;
+        totalSupply       -= amount_;
 
-        emit Transfer(owner, address(0), amount);
+        emit Transfer(owner_, address(0), amount_);
     }
 
 }

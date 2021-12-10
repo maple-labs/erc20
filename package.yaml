@@ -4,5 +4,5 @@ source: src
 packages:
   - path: src/ERC20.sol
     contractName: ERC20
-    customChecksum: 0x98d4afd18b750d8da28fe9c2baff010a76336cd20c085c15457a9f599de21aec
+    customChecksum: 0xc98bdfa894c6adc0616f92279032e0230473ab4077f221f8c3539c5a807cb147
 customDescription: ERC-20 Artifacts and ABIs

@@ -8,7 +8,7 @@ import { MockERC20 }     from "./mocks/MockERC20.sol";
 import { InvariantTest } from "./utils/InvariantTest.sol";
 
 contract ERC20Test is DSTest {
-    
+
     MockERC20 token;
 
     address internal immutable self = address(this);
