@@ -5,7 +5,6 @@ import { IERC20 } from "./interfaces/IERC20.sol";
 
 /**
  * @title Modern and gas efficient ERC-20 implementation.
- * @dev   Code taken from https://github.com/maple-labs/erc20
  * @dev   Acknowledgements to Solmate, OpenZeppelin, and DSS for inspiring this code.
  */
 contract ERC20 is IERC20 {
@@ -21,6 +20,11 @@ contract ERC20 is IERC20 {
 
     mapping(address => mapping(address => uint256)) public override allowance;
 
+    /**
+     * @param name_     The name of the token.
+     * @param symbol_   The symbol of the token.
+     * @param decimals_ The decimal precision used by the token.
+     */
     constructor(string memory name_, string memory symbol_, uint8 decimals_) {
         name     = name_;
         symbol   = symbol_;
@@ -36,8 +40,8 @@ contract ERC20 is IERC20 {
         return true;
     }
 
-    function transfer(address to_, uint256 amount_) external override returns (bool success_) {
-        _transfer(msg.sender, to_, amount_);
+    function transfer(address recipient_, uint256 amount_) external override returns (bool success_) {
+        _transfer(msg.sender, recipient_, amount_);
         return true;
     }
 

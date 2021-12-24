@@ -39,7 +39,7 @@ contract ERC20Test is DSTest {
     }
 
     function prove_burn(address account, uint256 amount0, uint256 amount1) public {
-        if (amount1 > amount0) return; // Mint amount must exceed burn amount
+        if (amount1 > amount0) return;  // Mint amount must exceed burn amount.
 
         token.mint(account, amount0);
         token.burn(account, amount1);
@@ -70,7 +70,7 @@ contract ERC20Test is DSTest {
     }
 
     function prove_transferFrom(address to, uint256 approval, uint256 amount) public {
-        if (amount > approval) return; // Owner must approve for more than amount
+        if (amount > approval) return;  // Owner must approve for more than amount.
 
         ERC20User owner = new ERC20User();
 
