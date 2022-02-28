@@ -3,148 +3,49 @@ pragma solidity ^0.8.7;
 
 import { DSTest } from "../../lib/ds-test/src/test.sol";
 
-import { ERC20User }     from "./accounts/ERC20User.sol";
-import { MockERC20 }     from "./mocks/MockERC20.sol";
+import { ERC20PermitUser } from "./accounts/ERC20User.sol";
+
+import { MockERC20Permit }  from "./mocks/MockERC20Permit.sol";
+
+import { Hevm }          from "./utils/Hevm.sol";
 import { InvariantTest } from "./utils/InvariantTest.sol";
 
-contract ERC20Test is DSTest {
+import { ERC20Test, MockERC20 } from "./ERC20.t.sol";
 
-    MockERC20 token;
+contract ERC20BaseTest is ERC20Test {
 
-    address internal immutable self = address(this);
-
-    function setUp() public {
-        token = new MockERC20("Token", "TKN", 18);
-    }
-
-    function invariant_metadata() public {
-        assertEq(token.name(),     "Token");
-        assertEq(token.symbol(),   "TKN");
-        assertEq(token.decimals(), 18);
-    }
-
-    function test_metadata(string memory name, string memory symbol, uint8 decimals) public {
-        MockERC20 mockToken = new MockERC20(name, symbol, decimals);
-
-        assertEq(mockToken.name(),     name);
-        assertEq(mockToken.symbol(),   symbol);
-        assertEq(mockToken.decimals(), decimals);
-    }
-
-    function prove_mint(address account, uint256 amount) public {
-        token.mint(account, amount);
-
-        assertEq(token.totalSupply(),      amount);
-        assertEq(token.balanceOf(account), amount);
-    }
-
-    function prove_burn(address account, uint256 amount0, uint256 amount1) public {
-        if (amount1 > amount0) return;  // Mint amount must exceed burn amount.
-
-        token.mint(account, amount0);
-        token.burn(account, amount1);
-
-        assertEq(token.totalSupply(),      amount0 - amount1);
-        assertEq(token.balanceOf(account), amount0 - amount1);
-    }
-
-    function prove_approve(address account, uint256 amount) public {
-        assertTrue(token.approve(account, amount));
-
-        assertEq(token.allowance(self, account), amount);
-    }
-
-    function prove_transfer(address account, uint256 amount) public {
-        token.mint(self, amount);
-
-        assertTrue(token.transfer(account, amount));
-
-        assertEq(token.totalSupply(), amount);
-
-        if (self == account) {
-            assertEq(token.balanceOf(self), amount);
-        } else {
-            assertEq(token.balanceOf(self),    0);
-            assertEq(token.balanceOf(account), amount);
-        }
-    }
-
-    function prove_transferFrom(address to, uint256 approval, uint256 amount) public {
-        if (amount > approval) return;  // Owner must approve for more than amount.
-
-        ERC20User owner = new ERC20User();
-
-        token.mint(address(owner), amount);
-        owner.erc20_approve(address(token), self, approval);
-
-        assertTrue(token.transferFrom(address(owner), to, amount));
-
-        assertEq(token.totalSupply(), amount);
-
-        approval = address(owner) == self ? approval : approval - amount;
-
-        assertEq(token.allowance(address(owner), self), approval);
-
-        if (address(owner) == to) {
-            assertEq(token.balanceOf(address(owner)), amount);
-        } else {
-            assertEq(token.balanceOf(address(owner)), 0);
-            assertEq(token.balanceOf(to), amount);
-        }
-    }
-
-    function proveFail_transfer_insufficientBalance(address to, uint256 mintAmount, uint256 sendAmount) public {
-        require(mintAmount < sendAmount);
-
-        ERC20User account = new ERC20User();
-
-        token.mint(address(account), mintAmount);
-        account.erc20_transfer(address(token), to, sendAmount);
-    }
-
-    function proveFail_transferFrom_insufficientAllowance(address to, uint256 approval, uint256 amount) public {
-        require(approval < amount);
-
-        ERC20User owner = new ERC20User();
-
-        token.mint(address(owner), amount);
-        owner.erc20_approve(address(token), self, approval);
-        token.transferFrom(address(owner), to, amount);
-    }
-
-    function proveFail_transferFrom_insufficientBalance(address to, uint256 mintAmount, uint256 sendAmount) public {
-        require(mintAmount < sendAmount);
-
-        ERC20User owner = new ERC20User();
-
-        token.mint(address(owner), mintAmount);
-        owner.erc20_approve(address(token), self, sendAmount);
-        token.transferFrom(address(owner), to, sendAmount);
+    function setUp() override public {
+        token = MockERC20(address(new MockERC20Permit("Token", "TKN", 18)));
     }
 
 }
 
 contract ERC20PermitTest is DSTest {
 
-    MockERC20  token;
-    ERC20Users usr;
+    Hevm hevm;
+
+    MockERC20Permit token;
+    ERC20PermitUser       usr;
 
     uint256 skOwner   = 1;
     uint256 skSpender = 2;
     uint256 nonce     = 0;
     uint256 deadline  = 5000000000; // Timestamp far in the future
 
-    address owner   = hevm.addr(skOwner);
-    address spender = hevm.addr(skSpender);
+    address owner;
+    address spender;
+
+    uint256 constant WAD = 10 ** 18;
 
     function setUp() external {
-        hevm.warp(deadline - 52 weeks);
-        token = new MapleToken("Maple Token", "MPL", address(0x1111111111111111111111111111111111111111));
-        usr   = new MapleTokenUser();
-    }
+        hevm = Hevm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
 
-    function test_initialBalance() external {
-        assertEq(token.balanceOf(address(this)), 10_000_000 * WAD);
+        owner   = hevm.addr(skOwner);
+        spender = hevm.addr(skSpender);
+
+        hevm.warp(deadline - 52 weeks);
+        token = new MockERC20Permit("Maple Token", "MPL", 18);
+        usr   = new ERC20PermitUser();
     }
 
     function test_typehash() external {
@@ -161,7 +62,7 @@ contract ERC20PermitTest is DSTest {
         assertEq(token.allowance(owner, spender), 0);
 
         (uint8 v, bytes32 r, bytes32 s) = getValidPermitSignature(amount, owner, skOwner, deadline);
-        assertTrue(usr.try_permit(address(token), owner, spender, amount, deadline, v, r, s));
+        assertTrue(usr.try_erc20_permit(address(token), owner, spender, amount, deadline, v, r, s));
 
         assertEq(token.allowance(owner, spender), amount);
         assertEq(token.nonces(owner),             1);
@@ -170,16 +71,16 @@ contract ERC20PermitTest is DSTest {
     function test_permitZeroAddress() external {
         uint256 amount = 10 * WAD;
         (uint8 v, bytes32 r, bytes32 s) = getValidPermitSignature(amount, owner, skOwner, deadline);
-        assertTrue(!usr.try_permit(address(token), address(0), spender, amount, deadline, v, r, s));
+        assertTrue(!usr.try_erc20_permit(address(token), address(0), spender, amount, deadline, v, r, s));
     }
 
     function test_permitNonOwnerAddress() external {
         uint256 amount = 10 * WAD;
         (uint8 v, bytes32 r, bytes32 s) = getValidPermitSignature(amount, owner, skOwner, deadline);
-        assertTrue(!usr.try_permit(address(token), spender, owner, amount, deadline, v,  r,  s));
+        assertTrue(!usr.try_erc20_permit(address(token), spender, owner, amount, deadline, v,  r,  s));
 
         (v, r, s) = getValidPermitSignature(amount, spender, skSpender, deadline);
-        assertTrue(!usr.try_permit(address(token), owner, spender, amount, deadline, v, r, s));
+        assertTrue(!usr.try_erc20_permit(address(token), owner, spender, amount, deadline, v, r, s));
     }
 
     function test_permitWithExpiry() external {
@@ -191,7 +92,7 @@ contract ERC20PermitTest is DSTest {
         assertEq(block.timestamp, 482112000 + 1 hours + 1);
 
         (uint8 v, bytes32 r, bytes32 s) = getValidPermitSignature(amount, owner, skOwner, expiry);
-        assertTrue(!usr.try_permit(address(token), owner, spender, amount, expiry, v, r, s));
+        assertTrue(!usr.try_erc20_permit(address(token), owner, spender, amount, expiry, v, r, s));
 
         assertEq(token.allowance(owner, spender), 0);
         assertEq(token.nonces(owner),             0);
@@ -201,7 +102,7 @@ contract ERC20PermitTest is DSTest {
         assertEq(block.timestamp, 482112000 + 1 hours);
 
         (v, r, s) = getValidPermitSignature(amount, owner, skOwner, expiry);
-        assertTrue(usr.try_permit(address(token), owner, spender, amount, expiry, v, r, s));
+        assertTrue(usr.try_erc20_permit(address(token), owner, spender, amount, expiry, v, r, s));
 
         assertEq(token.allowance(owner, spender), amount);
         assertEq(token.nonces(owner),             1);
@@ -212,10 +113,10 @@ contract ERC20PermitTest is DSTest {
         (uint8 v, bytes32 r, bytes32 s) = getValidPermitSignature(amount, owner, skOwner, deadline);
 
         // First time should succeed
-        assertTrue(usr.try_permit(address(token), owner, spender, amount, deadline, v, r, s));
+        assertTrue(usr.try_erc20_permit(address(token), owner, spender, amount, deadline, v, r, s));
 
         // Second time nonce has been consumed and should fail
-        assertTrue(!usr.try_permit(address(token), owner, spender, amount, deadline, v, r, s));
+        assertTrue(!usr.try_erc20_permit(address(token), owner, spender, amount, deadline, v, r, s));
     }
 
     // Returns an ERC-2612 `permit` digest for the `owner` to sign
@@ -255,7 +156,7 @@ contract ERC20Invariants is DSTest, InvariantTest {
 
 contract BalanceSum {
 
-    MockERC20 public token = new MockERC20("Token", "TKN", 18);
+    MockERC20Permit public token = new MockERC20Permit("Token", "TKN", 18);
 
     uint256 public sum;
 
