@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.7;
 
-import { DSTest } from "../../lib/ds-test/src/test.sol";
+import { DSTest } from "../../modules/ds-test/src/test.sol";
 
 import { ERC20User }     from "./accounts/ERC20User.sol";
 import { MockERC20 }     from "./mocks/MockERC20.sol";

@@ -1,8 +1,8 @@
 {
     "language": "Solidity",
     "sources": {
-        "src/ERC20.sol": {
-            "urls": ["src/ERC20.sol"]
+        "contracts/ERC20.sol": {
+            "urls": ["contracts/ERC20.sol"]
         }
     },
     "settings": {
