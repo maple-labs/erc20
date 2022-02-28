@@ -7,7 +7,7 @@ import { IERC20Permit } from "./interfaces/IERC20Permit.sol";
  * @title Modern and gas efficient ERC-20 implementation.
  * @dev   Acknowledgements to Solmate, OpenZeppelin, and DSS for inspiring this code.
  */
-contract ERC20 is IERC20Permit {
+contract ERC20Permit is IERC20Permit {
 
     bytes32 public immutable override DOMAIN_SEPARATOR;
     bytes32 public constant  override PERMIT_TYPEHASH = 0xfc77c2b9d30fe91687fd39abb7d16fcdfe1472d065740051ab8b13e4bf4a617f;
