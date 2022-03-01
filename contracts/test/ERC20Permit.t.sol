@@ -132,7 +132,7 @@ contract ERC20PermitTest is DSTest {
 
     // Returns a valid `permit` signature signed by this contract's `owner` address
     function _getValidPermitSignature(uint256 value, address owner_, uint256 ownersk, uint256 deadline_) internal view returns (uint8, bytes32, bytes32) {
-        bytes32 digest = getDigest(owner_, spender, value, nonce, deadline_);
+        bytes32 digest = _getDigest(owner_, spender, value, nonce, deadline_);
         ( uint8 v, bytes32 r, bytes32 s ) = hevm.sign(ownersk, digest);
         return (v, r, s);
     }
