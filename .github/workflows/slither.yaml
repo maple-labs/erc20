@@ -30,6 +30,7 @@ jobs:
 
       - name: Summary of static analysis
         run: |
+<<<<<<< HEAD
           slither contracts --print human-summary
 
       - name: Contract summary of static analysis
@@ -51,4 +52,27 @@ jobs:
       - name: Static Analysis
         run: |
           slither contracts
+=======
+          slither src --print human-summary
+
+      - name: Contract summary of static analysis
+        run: |
+          slither src --print contract-summary
+
+      - name: Function summary
+        run: |
+          slither src --print function-summary
+
+      - name: Inheritance
+        run: |
+          slither src --print inheritance
+
+      - name: Data dependency
+        run: |
+          slither src --print data-dependency
+
+      - name: Static Analysis
+        run: |
+          slither src
+>>>>>>> 41eb11a (feat: switched to forge)
         continue-on-error: true

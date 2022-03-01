@@ -17,4 +17,8 @@ jobs:
         run: forge update
 
       - name: Run forge tests
+<<<<<<< HEAD
         run: ./test.sh -p deep
+=======
+        run: ./test.sh -r 100000
+>>>>>>> 41eb11a (feat: switched to forge)
