@@ -9,7 +9,6 @@ import { MockERC20 }     from "./mocks/MockERC20.sol";
 import { InvariantTest } from "./utils/InvariantTest.sol";
 import { Vm }            from "./utils/Vm.sol";
 
-
 contract ERC20Test is DSTest {
 
     Vm vm = Vm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
