@@ -17,7 +17,7 @@ This was intentional, as this ERC-20 was intended to have the minimum functional
 To clone, set up and run tests:
 ```
 git clone git@github.com:maple-labs/ERC20.git
-dapp update
+forge update
 make test
 ```
 
