@@ -71,6 +71,7 @@ contract ERC20PermitTest is DSTest {
     function test_permitZeroAddress() external {
         uint256 amount = 10 * WAD;
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, owner, skOwner, deadline);
+        assertTrue( user.try_erc20_permit(address(token), address(0), spender, amount, deadline, 17, r, s));  // https://ethereum.stackexchange.com/questions/69328/how-to-get-the-zero-address-from-ecrecover
         assertTrue(!user.try_erc20_permit(address(token), address(0), spender, amount, deadline, v, r, s));
     }
 
