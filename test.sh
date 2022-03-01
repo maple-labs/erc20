@@ -6,26 +6,14 @@ do
     case "${flag}" in
         t) test=${OPTARG};;
         r) runs=${OPTARG};;
-        b) build=${OPTARG};;
-        c) config=${OPTARG};;
     esac
 done
 
-runs=$([ -z "$runs" ] && echo "100" || echo "$runs")
-build=$([ -z "$build" ] && echo "1" || echo "$build")
-config=$([ -z "$config" ] && echo "./config/dev.json" || echo "$config")
-skip_build=$([ "$build" == "0" ] && echo "1" || echo "0")
+runs=$([ -z "$runs" ] && echo "10" || echo "$runs")
 
 export DAPP_SOLC_VERSION=0.8.7
-export DAPP_STANDARD_JSON=$config
-export DAPP_TEST_SMTTIMEOUT=3600000
-export DAPP_SRC="contracts"
-export DAPP_LIB="modules"
+export PROPTEST_CASES=$runs
 
-if [ "$skip_build" = "1" ]; then export DAPP_SKIP_BUILD=1; fi
+if [ -z "$test" ]; then match="[contracts/test/*.t.sol]"; else match=$test; fi
 
-if [ -z "$test" ]; then match="[contracts/test/*.t.sol]"; dapp_test_verbosity=1; else match=$test; dapp_test_verbosity=2; fi
-
-echo LANG=C.UTF-8 dapp test --match "$match" --verbosity $dapp_test_verbosity --fuzz-runs $runs
-
-LANG=C.UTF-8 dapp test --match "$match" --verbosity $dapp_test_verbosity --fuzz-runs $runs; 
+forge test --match "$match" -vvv
