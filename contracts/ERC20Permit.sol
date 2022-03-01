@@ -24,13 +24,13 @@ contract ERC20Permit is IERC20Permit {
 
     mapping(address => mapping(address => uint256)) public override allowance;
 
-
     /****************/
     /*** ERC-2612 ***/
     /****************/
 
     // PERMIT_TYPEHASH = keccak256("Permit(address owner,address spender,uint256 amount,uint256 nonce,uint256 deadline)");
-    bytes32 public constant  override PERMIT_TYPEHASH = 0xfc77c2b9d30fe91687fd39abb7d16fcdfe1472d065740051ab8b13e4bf4a617f;
+    bytes32 public constant override PERMIT_TYPEHASH = 0xfc77c2b9d30fe91687fd39abb7d16fcdfe1472d065740051ab8b13e4bf4a617f;
+
     bytes32 public immutable override DOMAIN_SEPARATOR;
 
     mapping (address => uint256) public override nonces;

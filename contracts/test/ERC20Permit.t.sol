@@ -12,7 +12,7 @@ import { InvariantTest } from "./utils/InvariantTest.sol";
 
 import { ERC20Test, MockERC20 } from "./ERC20.t.sol";
 
-contract ERC20BaseTest is ERC20Test {
+contract ERC20PermitBaseTest is ERC20Test {
 
     function setUp() override public {
         token = MockERC20(address(new MockERC20Permit("Token", "TKN", 18)));
@@ -30,7 +30,7 @@ contract ERC20PermitTest is DSTest {
     uint256 skOwner   = 1;
     uint256 skSpender = 2;
     uint256 nonce     = 0;
-    uint256 deadline  = 5000000000; // Timestamp far in the future
+    uint256 deadline  = 5_000_000_000;  // Timestamp far in the future
 
     address owner;
     address spender;
@@ -61,7 +61,7 @@ contract ERC20PermitTest is DSTest {
         assertEq(token.nonces(owner),             0);
         assertEq(token.allowance(owner, spender), 0);
 
-        (uint8 v, bytes32 r, bytes32 s) = _getValidPermitSignature(amount, owner, skOwner, deadline);
+        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, owner, skOwner, deadline);
         assertTrue(user.try_erc20_permit(address(token), owner, spender, amount, deadline, v, r, s));
 
         assertEq(token.allowance(owner, spender), amount);
@@ -70,7 +70,7 @@ contract ERC20PermitTest is DSTest {
 
     function test_permitZeroAddress() external {
         uint256 amount = 10 * WAD;
-        (uint8 v, bytes32 r, bytes32 s) = _getValidPermitSignature(amount, owner, skOwner, deadline);
+        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, owner, skOwner, deadline);
         assertTrue(!user.try_erc20_permit(address(token), address(0), spender, amount, deadline, v, r, s));
     }
 
@@ -131,9 +131,9 @@ contract ERC20PermitTest is DSTest {
     }
 
     // Returns a valid `permit` signature signed by this contract's `owner` address
-    function _getValidPermitSignature(uint256 value, address owner_, uint256 ownersk, uint256 deadline_) internal view returns (uint8, bytes32, bytes32) {
-        bytes32 digest = _getDigest(owner_, spender, value, nonce, deadline_);
-        ( uint8 v, bytes32 r, bytes32 s ) = hevm.sign(ownersk, digest);
+    function _getValidPermitSignature(uint256 value_, address owner_, uint256 ownerSk_, uint256 deadline_) internal view returns (uint8 v_, bytes32 r_, bytes32 s_) {
+        bytes32 digest = _getDigest(owner_, spender, value_, nonce, deadline_);
+        ( uint8 v, bytes32 r, bytes32 s ) = hevm.sign(ownerSk_, digest);
         return (v, r, s);
     }
 
