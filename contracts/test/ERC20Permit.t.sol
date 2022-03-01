@@ -7,7 +7,7 @@ import { ERC20PermitUser } from "./accounts/ERC20User.sol";
 
 import { MockERC20Permit } from "./mocks/MockERC20.sol";
 
-import { Hevm }          from "./utils/Hevm.sol";
+import { Vm }              from "./utils/Vm.sol";
 import { InvariantTest } from "./utils/InvariantTest.sol";
 
 import { ERC20Test, MockERC20 } from "./ERC20.t.sol";
@@ -22,7 +22,9 @@ contract ERC20PermitBaseTest is ERC20Test {
 
 contract ERC20PermitTest is DSTest {
 
-    Hevm hevm;
+    Vm vm = Vm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
+
+    bytes constant ARITHMETIC_ERROR = abi.encodeWithSignature("Panic(uint256)", 0x11);
 
     MockERC20Permit token;
     ERC20PermitUser user;
@@ -38,12 +40,12 @@ contract ERC20PermitTest is DSTest {
     uint256 constant WAD = 10 ** 18;
 
     function setUp() external {
-        hevm = Hevm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
+        vm = Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
 
-        owner   = hevm.addr(skOwner);
-        spender = hevm.addr(skSpender);
+        owner   = vm.addr(skOwner);
+        spender = vm.addr(skSpender);
 
-        hevm.warp(deadline - 52 weeks);
+        vm.warp(deadline - 52 weeks);
         token = new MockERC20Permit("Maple Token", "MPL", 18);
         user  = new ERC20PermitUser();
     }
@@ -71,17 +73,26 @@ contract ERC20PermitTest is DSTest {
     function test_permitZeroAddress() external {
         uint256 amount = 10 * WAD;
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, owner, skOwner, deadline);
-        assertTrue( user.try_erc20_permit(address(token), address(0), spender, amount, deadline, 17, r, s));  // https://ethereum.stackexchange.com/questions/69328/how-to-get-the-zero-address-from-ecrecover
-        assertTrue(!user.try_erc20_permit(address(token), address(0), spender, amount, deadline, v, r, s));
+
+        vm.expectRevert(bytes("ERC20Permit:INVALID_SIGNATURE"));
+        user.erc20_permit(address(token), address(0), spender, amount, deadline, 17, r, s);  // https://ethereum.stackexchange.com/questions/69328/how-to-get-the-zero-address-from-ecrecover
+        
+        vm.expectRevert(bytes("ERC20Permit:INVALID_SIGNATURE"));
+        user.erc20_permit(address(token), address(0), spender, amount, deadline, v, r, s);
     }
 
     function test_permitNonOwnerAddress() external {
         uint256 amount = 10 * WAD;
+
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, owner, skOwner, deadline);
-        assertTrue(!user.try_erc20_permit(address(token), spender, owner, amount, deadline, v,  r,  s));
+
+        vm.expectRevert(bytes("ERC20Permit:INVALID_SIGNATURE"));
+        user.erc20_permit(address(token), spender, owner, amount, deadline, v,  r,  s);
 
         ( v, r, s ) = _getValidPermitSignature(amount, spender, skSpender, deadline);
-        assertTrue(!user.try_erc20_permit(address(token), owner, spender, amount, deadline, v, r, s));
+
+        vm.expectRevert(bytes("ERC20Permit:INVALID_SIGNATURE"));
+        user.erc20_permit(address(token), owner, spender, amount, deadline, v, r, s);
     }
 
     function test_permitWithExpiry() external {
@@ -89,17 +100,19 @@ contract ERC20PermitTest is DSTest {
         uint256 expiry = 482112000 + 1 hours;
 
         // Expired permit should fail
-        hevm.warp(482112000 + 1 hours + 1);
+        vm.warp(482112000 + 1 hours + 1);
         assertEq(block.timestamp, 482112000 + 1 hours + 1);
 
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, owner, skOwner, expiry);
-        assertTrue(!user.try_erc20_permit(address(token), owner, spender, amount, expiry, v, r, s));
+
+        vm.expectRevert(bytes("ERC20Permit:EXPIRED"));
+        user.erc20_permit(address(token), owner, spender, amount, expiry, v, r, s);
 
         assertEq(token.allowance(owner, spender), 0);
         assertEq(token.nonces(owner),             0);
 
         // Valid permit should succeed
-        hevm.warp(482112000 + 1 hours);
+        vm.warp(482112000 + 1 hours);
         assertEq(block.timestamp, 482112000 + 1 hours);
 
         ( v, r, s ) = _getValidPermitSignature(amount, owner, skOwner, expiry);
@@ -117,7 +130,8 @@ contract ERC20PermitTest is DSTest {
         assertTrue(user.try_erc20_permit(address(token), owner, spender, amount, deadline, v, r, s));
 
         // Second time nonce has been consumed and should fail
-        assertTrue(!user.try_erc20_permit(address(token), owner, spender, amount, deadline, v, r, s));
+        vm.expectRevert(bytes("ERC20Permit:INVALID_SIGNATURE"));
+        user.erc20_permit(address(token), owner, spender, amount, deadline, v, r, s);
     }
 
     // Returns an ERC-2612 `permit` digest for the `owner` to sign
@@ -132,9 +146,9 @@ contract ERC20PermitTest is DSTest {
     }
 
     // Returns a valid `permit` signature signed by this contract's `owner` address
-    function _getValidPermitSignature(uint256 value_, address owner_, uint256 ownerSk_, uint256 deadline_) internal view returns (uint8 v_, bytes32 r_, bytes32 s_) {
+    function _getValidPermitSignature(uint256 value_, address owner_, uint256 ownerSk_, uint256 deadline_) internal returns (uint8 v_, bytes32 r_, bytes32 s_) {
         bytes32 digest = _getDigest(owner_, spender, value_, nonce, deadline_);
-        ( uint8 v, bytes32 r, bytes32 s ) = hevm.sign(ownerSk_, digest);
+        ( uint8 v, bytes32 r, bytes32 s ) = vm.sign(ownerSk_, digest);
         return (v, r, s);
     }
 

@@ -79,7 +79,7 @@ contract ERC20Permit is IERC20Permit {
             )
         );
         address recoveredAddress = ecrecover(digest, v, r, s);
-        require(recoveredAddress == owner, 'ERC20Permit:INVALID_SIGNATURE');
+        require(recoveredAddress == owner && owner != address(0), 'ERC20Permit:INVALID_SIGNATURE');
         _approve(owner, spender, amount);
     }
 
