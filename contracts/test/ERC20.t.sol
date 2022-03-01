@@ -5,9 +5,16 @@ import { DSTest } from "../../modules/ds-test/src/test.sol";
 
 import { ERC20User }     from "./accounts/ERC20User.sol";
 import { MockERC20 }     from "./mocks/MockERC20.sol";
+
 import { InvariantTest } from "./utils/InvariantTest.sol";
+import { Vm }            from "./utils/Vm.sol";
+
 
 contract ERC20Test is DSTest {
+
+    Vm vm = Vm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
+
+    bytes constant ARITHMETIC_ERROR = abi.encodeWithSignature("Panic(uint256)", 0x11);
 
     MockERC20 token;
 
@@ -93,33 +100,55 @@ contract ERC20Test is DSTest {
         }
     }
 
-    function testFail_transfer_insufficientBalance(address to, uint256 mintAmount, uint256 sendAmount) public {
-        require(mintAmount < sendAmount);
+    function test_transfer_insufficientBalance(address to, uint256 amount) public {
+        amount = amount == 0 ? 1 : amount;
 
         ERC20User account = new ERC20User();
 
-        token.mint(address(account), mintAmount);
-        account.erc20_transfer(address(token), to, sendAmount);
+        token.mint(address(account), amount - 1);
+
+        vm.expectRevert(ARITHMETIC_ERROR);
+        account.erc20_transfer(address(token), to, amount);
+
+        token.mint(address(account), 1);
+        account.erc20_transfer(address(token), to, amount);
+
+        assertEq(token.balanceOf(to), amount);
     }
 
-    function testFail_transferFrom_insufficientAllowance(address to, uint256 approval, uint256 amount) public {
-        require(approval < amount);
+    function test_transferFrom_insufficientAllowance(address to, uint256 amount) public {
+        amount = amount == 0 ? 1 : amount;
 
         ERC20User owner = new ERC20User();
 
         token.mint(address(owner), amount);
-        owner.erc20_approve(address(token), self, approval);
+
+        owner.erc20_approve(address(token), self, amount - 1);
+
+        vm.expectRevert(ARITHMETIC_ERROR);
         token.transferFrom(address(owner), to, amount);
+
+        owner.erc20_approve(address(token), self, amount);
+        token.transferFrom(address(owner), to, amount);
+
+        assertEq(token.balanceOf(to), amount);
     }
 
-    function testFail_transferFrom_insufficientBalance(address to, uint256 mintAmount, uint256 sendAmount) public {
-        require(mintAmount < sendAmount);
+    function test_transferFrom_insufficientBalance(address to, uint256 amount) public {
+        amount = amount == 0 ? 1 : amount;
 
         ERC20User owner = new ERC20User();
 
-        token.mint(address(owner), mintAmount);
-        owner.erc20_approve(address(token), self, sendAmount);
-        token.transferFrom(address(owner), to, sendAmount);
+        token.mint(address(owner), amount - 1);
+        owner.erc20_approve(address(token), self, amount);
+
+        vm.expectRevert(ARITHMETIC_ERROR);
+        token.transferFrom(address(owner), to, amount);
+
+        token.mint(address(owner), 1);
+        token.transferFrom(address(owner), to, amount);
+
+        assertEq(token.balanceOf(to), amount);
     }
 
 }
