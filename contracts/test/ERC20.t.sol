@@ -19,7 +19,7 @@ contract ERC20Test is DSTest {
 
     address internal immutable self = address(this);
 
-    function setUp() public {
+    function setUp() public virtual {
         token = new MockERC20("Token", "TKN", 18);
     }
 
