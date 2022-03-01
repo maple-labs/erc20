@@ -5,7 +5,7 @@ while getopts t:p: flag
 do
     case "${flag}" in
         t) test=${OPTARG};;
-        r) profile=${OPTARG};;
+        p) profile=${OPTARG};;
     esac
 done
 
