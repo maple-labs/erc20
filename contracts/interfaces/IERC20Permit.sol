@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.7;
 
-/// @title Interface of the ERC20 standard as defined in the EIP.
+/// @title Interface of the ERC20 standard with the addition of permit functionality outlined in EIP 2612
 interface IERC20Permit {
 
     /**
@@ -22,32 +22,32 @@ interface IERC20Permit {
 
     /**
         @dev   Approve by signature.
-        @param owner    Owner address that signed the permit
-        @param spender  Spender of the permit
-        @param amount   Permit approval spend limit
-        @param deadline Deadline after which the permit is invalid
-        @param v        ECDSA signature v component
-        @param r        ECDSA signature r component
-        @param s        ECDSA signature s component
+        @param owner    Owner address that signed the permit.
+        @param spender  Spender of the permit.
+        @param amount   Permit approval spend limit.
+        @param deadline Deadline after which the permit is invalid.
+        @param v        ECDSA signature v component.
+        @param r        ECDSA signature r component.
+        @param s        ECDSA signature s component.
      */
     function permit(address owner, address spender, uint amount, uint deadline, uint8 v, bytes32 r, bytes32 s) external;
 
     /**
-     * @dev Returns the permit type hash.
-     * @return hash_ The typehash for the commit
+     * @dev    Returns the permit type hash.
+     * @return hash_ The typehash for the commit.
      */
     function PERMIT_TYPEHASH() external pure returns (bytes32 hash_);
     
     /**
-      * @dev   Returns the nonce for the given owner.
-      * @param owner The addreses of the owner account
-      * @return nonce_ The current nonce
+      * @dev    Returns the nonce for the given owner.
+      * @param  owner The addreses of the owner account.
+      * @return nonce_ The current nonce.
      */
     function nonces(address owner) external view returns (uint256 nonce_);
 
     /**
-     * @dev Returns the signature domain separator.
-     * @return domain_ The domain for the contract
+     * @dev    Returns the signature domain separator.
+     * @return domain_ The domain for the contract.
      */
     function DOMAIN_SEPARATOR() external view returns (bytes32 domain_);
 

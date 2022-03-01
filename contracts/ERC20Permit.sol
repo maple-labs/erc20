@@ -9,9 +9,10 @@ import { IERC20Permit } from "./interfaces/IERC20Permit.sol";
  */
 contract ERC20Permit is IERC20Permit {
 
-    bytes32 public immutable override DOMAIN_SEPARATOR;
-    bytes32 public constant  override PERMIT_TYPEHASH = 0xfc77c2b9d30fe91687fd39abb7d16fcdfe1472d065740051ab8b13e4bf4a617f;
-    
+    /**************/
+    /*** ERC-20 ***/
+    /**************/
+
     string public override name;
     string public override symbol;
 
@@ -22,6 +23,15 @@ contract ERC20Permit is IERC20Permit {
     mapping(address => uint256) public override balanceOf;
 
     mapping(address => mapping(address => uint256)) public override allowance;
+
+
+    /****************/
+    /*** ERC-2612 ***/
+    /****************/
+
+    // PERMIT_TYPEHASH = keccak256("Permit(address owner,address spender,uint256 amount,uint256 nonce,uint256 deadline)");
+    bytes32 public constant  override PERMIT_TYPEHASH = 0xfc77c2b9d30fe91687fd39abb7d16fcdfe1472d065740051ab8b13e4bf4a617f;
+    bytes32 public immutable override DOMAIN_SEPARATOR;
 
     mapping (address => uint256) public override nonces;
 
@@ -48,7 +58,6 @@ contract ERC20Permit is IERC20Permit {
                 address(this)
             )
         );
-
     }
 
     /**************************/
