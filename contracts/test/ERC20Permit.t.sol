@@ -64,7 +64,7 @@ contract ERC20PermitTest is DSTest {
         assertEq(token.allowance(owner, spender), 0);
 
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, owner, skOwner, deadline);
-        assertTrue(user.try_erc20_permit(address(token), owner, spender, amount, deadline, v, r, s));
+        user.erc20_permit(address(token), owner, spender, amount, deadline, v, r, s);
 
         assertEq(token.allowance(owner, spender), amount);
         assertEq(token.nonces(owner),             1);
@@ -76,7 +76,7 @@ contract ERC20PermitTest is DSTest {
 
         vm.expectRevert(bytes("ERC20Permit:INVALID_SIGNATURE"));
         user.erc20_permit(address(token), address(0), spender, amount, deadline, 17, r, s);  // https://ethereum.stackexchange.com/questions/69328/how-to-get-the-zero-address-from-ecrecover
-        
+
         vm.expectRevert(bytes("ERC20Permit:INVALID_SIGNATURE"));
         user.erc20_permit(address(token), address(0), spender, amount, deadline, v, r, s);
     }
@@ -116,7 +116,7 @@ contract ERC20PermitTest is DSTest {
         assertEq(block.timestamp, 482112000 + 1 hours);
 
         ( v, r, s ) = _getValidPermitSignature(amount, owner, skOwner, expiry);
-        assertTrue(user.try_erc20_permit(address(token), owner, spender, amount, expiry, v, r, s));
+        user.erc20_permit(address(token), owner, spender, amount, expiry, v, r, s);
 
         assertEq(token.allowance(owner, spender), amount);
         assertEq(token.nonces(owner),             1);
@@ -127,7 +127,7 @@ contract ERC20PermitTest is DSTest {
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, owner, skOwner, deadline);
 
         // First time should succeed
-        assertTrue(user.try_erc20_permit(address(token), owner, spender, amount, deadline, v, r, s));
+        user.erc20_permit(address(token), owner, spender, amount, deadline, v, r, s);
 
         // Second time nonce has been consumed and should fail
         vm.expectRevert(bytes("ERC20Permit:INVALID_SIGNATURE"));

@@ -51,9 +51,9 @@ contract ERC20Permit is IERC20Permit {
         }
         DOMAIN_SEPARATOR = keccak256(
             abi.encode(
-                keccak256('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)'),
+                keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
                 keccak256(bytes(name)),
-                keccak256(bytes('1')),
+                keccak256(bytes("1")),
                 chainId,
                 address(this)
             )
@@ -70,16 +70,16 @@ contract ERC20Permit is IERC20Permit {
     }
 
     function permit(address owner, address spender, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external override {
-        require(deadline >= block.timestamp, 'ERC20Permit:EXPIRED');
+        require(deadline >= block.timestamp, "ERC20Permit:EXPIRED");
         bytes32 digest = keccak256(
             abi.encodePacked(
-                '\x19\x01',
+                "\x19\x01",
                 DOMAIN_SEPARATOR,
                 keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, amount, nonces[owner]++, deadline))
             )
         );
         address recoveredAddress = ecrecover(digest, v, r, s);
-        require(recoveredAddress == owner && owner != address(0), 'ERC20Permit:INVALID_SIGNATURE');
+        require(recoveredAddress == owner && owner != address(0), "ERC20Permit:INVALID_SIGNATURE");
         _approve(owner, spender, amount);
     }
 

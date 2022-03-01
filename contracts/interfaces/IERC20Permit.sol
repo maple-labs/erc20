@@ -22,22 +22,22 @@ interface IERC20Permit {
 
     /**
         @dev   Approve by signature.
-        @param owner    Owner address that signed the permit.
-        @param spender  Spender of the permit.
-        @param amount   Permit approval spend limit.
-        @param deadline Deadline after which the permit is invalid.
-        @param v        ECDSA signature v component.
-        @param r        ECDSA signature r component.
-        @param s        ECDSA signature s component.
+        @param owner_    Owner address that signed the permit.
+        @param spender_  Spender of the permit.
+        @param amount_   Permit approval spend limit.
+        @param deadline_ Deadline after which the permit is invalid.
+        @param v_        ECDSA signature v component.
+        @param r_        ECDSA signature r component.
+        @param s_        ECDSA signature s component.
      */
-    function permit(address owner, address spender, uint amount, uint deadline, uint8 v, bytes32 r, bytes32 s) external;
+    function permit(address owner_, address spender_, uint amount_, uint deadline_, uint8 v_, bytes32 r_, bytes32 s_) external;
 
     /**
      * @dev    Returns the permit type hash.
      * @return hash_ The typehash for the commit.
      */
     function PERMIT_TYPEHASH() external pure returns (bytes32 hash_);
-    
+
     /**
       * @dev    Returns the nonce for the given owner.
       * @param  owner The addreses of the owner account.

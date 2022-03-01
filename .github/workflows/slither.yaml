@@ -50,25 +50,5 @@ jobs:
 
       - name: Static Analysis
         run: |
-          slither contracts --print human-summary
-
-      - name: Contract summary of static analysis
-        run: |
-          slither contracts --print contract-summary
-
-      - name: Function summary
-        run: |
-          slither contracts --print function-summary
-
-      - name: Inheritance
-        run: |
-          slither contracts --print inheritance
-
-      - name: Data dependency
-        run: |
-          slither contracts --print data-dependency
-
-      - name: Static Analysis
-        run: |
           slither contracts
         continue-on-error: true
