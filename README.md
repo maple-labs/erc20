@@ -4,6 +4,7 @@
 
 **DISCLAIMER: This code has NOT been externally audited and is actively being developed. Please do not use in production without taking the appropriate steps to ensure maximum security.**
 
+<!-- TODO: Update this documentation to reflect new ERC20Permit implementation. -->
 Basic ERC-20 contract designed to be inherited and extended. Leveraging native overflow checks in solc 0.8 to simplify ERC-20 implementation. It should be noted that this ERC-20 implementation does not include some functionality that is commonly used in other tokens, such as:
 - `address(0)` checks on `_transfer`
 - `permit()`
