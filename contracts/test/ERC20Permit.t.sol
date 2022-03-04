@@ -54,6 +54,7 @@ contract ERC20PermitTest is DSTest {
         assertEq(token.PERMIT_TYPEHASH(), keccak256("Permit(address owner,address spender,uint256 amount,uint256 nonce,uint256 deadline)"));
     }
 
+    // NOTE: Virtual so inheriting tests can override with different DOMAIN_SEPARATORs because of different addresses
     function test_domainSeparator() external virtual {
         assertEq(token.DOMAIN_SEPARATOR(), 0x06c0ee43424d25534e5af6b6af862333b542f6583ff9948b8299442926099eec);
     }
