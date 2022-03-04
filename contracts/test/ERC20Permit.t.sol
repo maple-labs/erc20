@@ -9,7 +9,7 @@ import { ERC20PermitUser } from "./accounts/ERC20User.sol";
 
 import { MockERC20Permit } from "./mocks/MockERC20.sol";
 
-import { Vm }              from "./utils/Vm.sol";
+import { Vm }            from "./utils/Vm.sol";
 import { InvariantTest } from "./utils/InvariantTest.sol";
 
 import { ERC20Test, MockERC20 } from "./ERC20.t.sol";
@@ -41,9 +41,7 @@ contract ERC20PermitTest is DSTest {
 
     uint256 constant WAD = 10 ** 18;
 
-    function setUp() external {
-        vm = Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
-
+    function setUp() public virtual {
         owner   = vm.addr(skOwner);
         spender = vm.addr(skSpender);
 
@@ -56,7 +54,7 @@ contract ERC20PermitTest is DSTest {
         assertEq(token.PERMIT_TYPEHASH(), keccak256("Permit(address owner,address spender,uint256 amount,uint256 nonce,uint256 deadline)"));
     }
 
-    function test_domainSeparator() external {
+    function test_domainSeparator() external virtual {
         assertEq(token.DOMAIN_SEPARATOR(), 0x06c0ee43424d25534e5af6b6af862333b542f6583ff9948b8299442926099eec);
     }
 
