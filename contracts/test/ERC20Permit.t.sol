@@ -3,6 +3,8 @@ pragma solidity ^0.8.7;
 
 import { DSTest } from "../../modules/ds-test/src/test.sol";
 
+import { ERC20Permit } from "../ERC20Permit.sol";
+
 import { ERC20PermitUser } from "./accounts/ERC20User.sol";
 
 import { MockERC20Permit } from "./mocks/MockERC20.sol";
@@ -26,7 +28,7 @@ contract ERC20PermitTest is DSTest {
 
     bytes constant ARITHMETIC_ERROR = abi.encodeWithSignature("Panic(uint256)", 0x11);
 
-    MockERC20Permit token;
+    ERC20Permit     token;
     ERC20PermitUser user;
 
     uint256 skOwner   = 1;
@@ -46,7 +48,7 @@ contract ERC20PermitTest is DSTest {
         spender = vm.addr(skSpender);
 
         vm.warp(deadline - 52 weeks);
-        token = new MockERC20Permit("Maple Token", "MPL", 18);
+        token = new ERC20Permit("Maple Token", "MPL", 18);
         user  = new ERC20PermitUser();
     }
 
