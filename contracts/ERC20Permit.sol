@@ -102,11 +102,11 @@ contract ERC20Permit is IERC20Permit {
         emit Approval(owner_, spender_, allowance[owner_][spender_] = amount_);
     }
 
-    function _transfer(address owner_, address recipient_, uint256 amount_) internal {
-        balanceOf[owner_]     -= amount_;
-        balanceOf[recipient_] += amount_;
+    function _burn(address owner_, uint256 amount_) internal {
+        balanceOf[owner_] -= amount_;
+        totalSupply       -= amount_;
 
-        emit Transfer(owner_, recipient_, amount_);
+        emit Transfer(owner_, address(0), amount_);
     }
 
     function _mint(address recipient_, uint256 amount_) internal {
@@ -116,11 +116,11 @@ contract ERC20Permit is IERC20Permit {
         emit Transfer(address(0), recipient_, amount_);
     }
 
-    function _burn(address owner_, uint256 amount_) internal {
-        balanceOf[owner_] -= amount_;
-        totalSupply       -= amount_;
+    function _transfer(address owner_, address recipient_, uint256 amount_) internal {
+        balanceOf[owner_]     -= amount_;
+        balanceOf[recipient_] += amount_;
 
-        emit Transfer(owner_, address(0), amount_);
+        emit Transfer(owner_, recipient_, amount_);
     }
 
 }
