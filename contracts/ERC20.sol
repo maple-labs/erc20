@@ -51,11 +51,13 @@ contract ERC20 is IERC20 {
     }
 
     function transfer(address recipient_, uint256 amount_) external override returns (bool success_) {
+        if (recipient_ == address(this)) return false;
         _transfer(msg.sender, recipient_, amount_);
         return true;
     }
 
-    function transferFrom(address owner_, address recipient_, uint256 amount_) external override  (bool success_) {
+    function transferFrom(address owner_, address recipient_, uint256 amount_) external override returns (bool success_) {
+        if (recipient_ == address(this)) return false;
         _approve(owner_, msg.sender, allowance[owner_][msg.sender] - amount_);
         _transfer(owner_, recipient_, amount_);
         return true;
