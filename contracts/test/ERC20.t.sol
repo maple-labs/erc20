@@ -81,7 +81,18 @@ contract ERC20Test is TestUtils {
         assertEq(token.allowance(self, account), initialAmount - subtractedAmount);
     }
 
+    function test_transfer_sendToToken(address account, uint256 amount) public {
+        if (account == address(token)) return;
+
+        token.mint(self, amount);
+
+        assertTrue(!token.transfer(address(token), amount));
+        assertTrue( token.transfer(account, amount));
+    }
+
     function test_transfer(address account, uint256 amount) public {
+        if (account == address(token)) return;
+
         token.mint(self, amount);
 
         assertTrue(token.transfer(account, amount));
@@ -96,8 +107,22 @@ contract ERC20Test is TestUtils {
         }
     }
 
+    function test_transferFrom_sendToToken(address to, uint256 approval, uint256 amount) public {
+        if (to == address(token)) return;
+        if (amount > approval)    return;  // Owner must approve for more than amount.
+
+        ERC20User owner = new ERC20User();
+
+        token.mint(address(owner), amount);
+        owner.erc20_approve(address(token), self, approval);
+
+        assertTrue(!token.transferFrom(address(owner), address(token), amount));
+        assertTrue( token.transferFrom(address(owner), to,             amount));
+    }
+
     function test_transferFrom(address to, uint256 approval, uint256 amount) public {
-        if (amount > approval) return;  // Owner must approve for more than amount.
+        if (to == address(token)) return;
+        if (amount > approval)    return;  // Owner must approve for more than amount.
 
         ERC20User owner = new ERC20User();
 
