@@ -60,6 +60,14 @@ contract ERC20Test is DSTest {
         assertEq(token.allowance(self, account), amount);
     }
 
+    function test_increaseApproval(address account, uint256 amount) public {
+        token.approve(account, initialAmount);
+
+        assertTrue(token.increaseApproval(account, amount));
+
+        assertEq(token.allowance(self, account), amount);
+    }
+
     function test_transfer(address account, uint256 amount) public {
         token.mint(self, amount);
 
