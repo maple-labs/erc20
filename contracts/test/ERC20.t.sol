@@ -1,17 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.7;
 
-import { DSTest } from "../../modules/ds-test/src/test.sol";
+import { InvariantTest, TestUtils } from "../../modules/contract-test-utils/contracts/test.sol";
 
-import { ERC20User }     from "./accounts/ERC20User.sol";
-import { MockERC20 }     from "./mocks/MockERC20.sol";
+import { ERC20User } from "./accounts/ERC20User.sol";
+import { MockERC20 } from "./mocks/MockERC20.sol";
 
-import { InvariantTest } from "./utils/InvariantTest.sol";
-import { Vm }            from "./utils/Vm.sol";
-
-contract ERC20Test is DSTest {
-
-    Vm vm = Vm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
+contract ERC20Test is TestUtils {
 
     bytes constant ARITHMETIC_ERROR = abi.encodeWithSignature("Panic(uint256)", 0x11);
 
@@ -60,12 +55,30 @@ contract ERC20Test is DSTest {
         assertEq(token.allowance(self, account), amount);
     }
 
-    function test_increaseApproval(address account, uint256 amount) public {
+    function test_increaseAllowance(address account, uint256 initialAmount, uint256 addedAmount) public {
+        initialAmount = constrictToRange(initialAmount, 0, type(uint256).max / 2);
+        addedAmount   = constrictToRange(addedAmount,   0, type(uint256).max / 2);
+
         token.approve(account, initialAmount);
 
-        assertTrue(token.increaseApproval(account, amount));
+        assertEq(token.allowance(self, account), initialAmount);
 
-        assertEq(token.allowance(self, account), amount);
+        assertTrue(token.increaseAllowance(account, addedAmount));
+
+        assertEq(token.allowance(self, account), initialAmount + addedAmount);
+    }
+
+    function test_decreaseAllowance(address account, uint256 initialAmount, uint256 subtractedAmount) public {
+        initialAmount    = constrictToRange(initialAmount,    0, type(uint256).max);
+        subtractedAmount = constrictToRange(subtractedAmount, 0, initialAmount);
+
+        token.approve(account, initialAmount);
+
+        assertEq(token.allowance(self, account), initialAmount);
+
+        assertTrue(token.decreaseAllowance(account, subtractedAmount));
+
+        assertEq(token.allowance(self, account), initialAmount - subtractedAmount);
     }
 
     function test_transfer(address account, uint256 amount) public {
@@ -160,7 +173,7 @@ contract ERC20Test is DSTest {
 
 }
 
-contract ERC20Invariants is DSTest, InvariantTest {
+contract ERC20Invariants is TestUtils, InvariantTest {
 
     BalanceSum balanceSum;
 

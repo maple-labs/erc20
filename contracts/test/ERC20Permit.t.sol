@@ -1,17 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.7;
 
-import { DSTest } from "../../modules/ds-test/src/test.sol";
+import { InvariantTest, TestUtils } from "../../modules/contract-test-utils/contracts/test.sol";
 
 import { ERC20Permit } from "../ERC20Permit.sol";
 
-import { ERC20PermitUser } from "./accounts/ERC20User.sol";
-
-import { MockERC20Permit } from "./mocks/MockERC20.sol";
-
-import { Vm }            from "./utils/Vm.sol";
-import { InvariantTest } from "./utils/InvariantTest.sol";
-
+import { ERC20PermitUser }      from "./accounts/ERC20User.sol";
+import { MockERC20Permit }      from "./mocks/MockERC20.sol";
 import { ERC20Test, MockERC20 } from "./ERC20.t.sol";
 
 contract ERC20PermitBaseTest is ERC20Test {
@@ -22,9 +17,7 @@ contract ERC20PermitBaseTest is ERC20Test {
 
 }
 
-contract ERC20PermitTest is DSTest {
-
-    Vm vm = Vm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
+contract ERC20PermitTest is TestUtils {
 
     bytes constant ARITHMETIC_ERROR = abi.encodeWithSignature("Panic(uint256)", 0x11);
 
@@ -155,7 +148,7 @@ contract ERC20PermitTest is DSTest {
 
 }
 
-contract ERC20Invariants is DSTest, InvariantTest {
+contract ERC20Invariants is TestUtils, InvariantTest {
 
     BalanceSum balanceSum;
 
