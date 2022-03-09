@@ -31,8 +31,6 @@ contract ERC20Permit is IERC20Permit {
     // PERMIT_TYPEHASH = keccak256("Permit(address owner,address spender,uint256 amount,uint256 nonce,uint256 deadline)");
     bytes32 public constant override PERMIT_TYPEHASH = 0xfc77c2b9d30fe91687fd39abb7d16fcdfe1472d065740051ab8b13e4bf4a617f;
 
-    bytes32 public immutable override DOMAIN_SEPARATOR;
-
     mapping (address => uint256) public override nonces;
 
     /**
@@ -44,25 +42,23 @@ contract ERC20Permit is IERC20Permit {
         name     = name_;
         symbol   = symbol_;
         decimals = decimals_;
-
-        uint256 chainId;
-        assembly {
-            chainId := chainid()
-        }
-        DOMAIN_SEPARATOR = keccak256(
-            abi.encode(
-                keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
-                keccak256(bytes(name)),
-                keccak256(bytes("1")),
-                chainId,
-                address(this)
-            )
-        );
     }
 
     /**************************/
     /*** External Functions ***/
     /**************************/
+
+    function DOMAIN_SEPARATOR() public view override returns (bytes32 domainSeparator_) {
+        return keccak256(
+            abi.encode(
+                keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
+                keccak256(bytes(name)),
+                keccak256(bytes("1")),
+                block.chainid,
+                address(this)
+            )
+        );
+    }
 
     function approve(address spender_, uint256 amount_) external override returns (bool success_) {
         _approve(msg.sender, spender_, amount_);
@@ -84,7 +80,7 @@ contract ERC20Permit is IERC20Permit {
         bytes32 digest = keccak256(
             abi.encodePacked(
                 "\x19\x01",
-                DOMAIN_SEPARATOR,
+                DOMAIN_SEPARATOR(),
                 keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, amount, nonces[owner]++, deadline))
             )
         );

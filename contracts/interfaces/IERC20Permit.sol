@@ -25,16 +25,16 @@ interface IERC20Permit is IERC20 {
     function PERMIT_TYPEHASH() external pure returns (bytes32 hash_);
 
     /**
-     *  @dev    Returns the nonce for the given owner.
-     *  @param  owner The addreses of the owner account.
-     *  @return nonce_ The current nonce.
+      * @dev    Returns the nonce for the given owner.
+      * @param  owner The address of the owner account.
+      * @return nonce_ The current nonce.
      */
     function nonces(address owner) external view returns (uint256 nonce_);
 
     /**
-     *  @dev    Returns the signature domain separator.
-     *  @return domain_ The domain for the contract.
+     * @dev    Returns the signature domain separator.
+     * @return domainSeparator_ The domain for the contract.
      */
-    function DOMAIN_SEPARATOR() external view returns (bytes32 domain_);
+    function DOMAIN_SEPARATOR() external view returns (bytes32 domainSeparator_);
 
 }
