@@ -31,7 +31,9 @@ contract ERC20Permit is IERC20Permit {
     // PERMIT_TYPEHASH = keccak256("Permit(address owner,address spender,uint256 amount,uint256 nonce,uint256 deadline)");
     bytes32 public constant override PERMIT_TYPEHASH = 0xfc77c2b9d30fe91687fd39abb7d16fcdfe1472d065740051ab8b13e4bf4a617f;
 
-    bytes32 public immutable override DOMAIN_SEPARATOR;
+    uint256 public immutable override INITIAL_CHAIN_ID;
+
+    bytes32 public immutable override INITIAL_DOMAIN_SEPARATOR;
 
     mapping (address => uint256) public override nonces;
 
@@ -45,19 +47,8 @@ contract ERC20Permit is IERC20Permit {
         symbol   = symbol_;
         decimals = decimals_;
 
-        uint256 chainId;
-        assembly {
-            chainId := chainid()
-        }
-        DOMAIN_SEPARATOR = keccak256(
-            abi.encode(
-                keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
-                keccak256(bytes(name)),
-                keccak256(bytes("1")),
-                chainId,
-                address(this)
-            )
-        );
+        INITIAL_CHAIN_ID         = block.chainid;
+        INITIAL_DOMAIN_SEPARATOR = _getDomainSeparator(bytes(name_), block.chainid, address(this));
     }
 
     /**************************/
@@ -84,7 +75,7 @@ contract ERC20Permit is IERC20Permit {
         bytes32 digest = keccak256(
             abi.encodePacked(
                 "\x19\x01",
-                DOMAIN_SEPARATOR,
+                DOMAIN_SEPARATOR(),
                 keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, amount, nonces[owner]++, deadline))
             )
         );
@@ -131,6 +122,35 @@ contract ERC20Permit is IERC20Permit {
         balanceOf[recipient_] += amount_;
 
         emit Transfer(owner_, recipient_, amount_);
+    }
+
+    /**********************/
+    /*** View Functions ***/
+    /**********************/
+
+    function DOMAIN_SEPARATOR() public view override returns (bytes32 domainSeparator_) {
+        return
+            block.chainid == INITIAL_CHAIN_ID ?
+                INITIAL_DOMAIN_SEPARATOR :
+                _getDomainSeparator(bytes(name), block.chainid, address(this));
+    }
+
+    /*******************************/
+    /*** Internal Pure Functions ***/
+    /*******************************/
+
+    function _getDomainSeparator(bytes memory name_, uint256 chainId_, address contractAddress_)
+        internal pure returns (bytes32 domainSeparator_)
+    {
+        domainSeparator_ = keccak256(
+            abi.encode(
+                keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
+                keccak256(name_),
+                keccak256(bytes("1")),
+                chainId_,
+                contractAddress_
+            )
+        );
     }
 
 }

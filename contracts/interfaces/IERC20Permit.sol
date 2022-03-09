@@ -6,6 +6,10 @@ import { IERC20 } from "./IERC20.sol";
 /// @title Interface of the ERC20 standard with the addition of permit functionality outlined in EIP 2612
 interface IERC20Permit is IERC20 {
 
+    /**************************/
+    /*** External Functions ***/
+    /**************************/
+
     /**
      *  @dev   Approve by signature.
      *  @param owner_    Owner address that signed the permit.
@@ -18,11 +22,27 @@ interface IERC20Permit is IERC20 {
      */
     function permit(address owner_, address spender_, uint amount_, uint deadline_, uint8 v_, bytes32 r_, bytes32 s_) external;
 
+    /**********************/
+    /*** View Functions ***/
+    /**********************/
+
     /**
-     *  @dev    Returns the permit type hash.
-     *  @return hash_ The typehash for the commit.
+     *  @dev    Returns the signature domain separator.
+     *  @return domainSeparator_ The domain for the contract.
      */
-    function PERMIT_TYPEHASH() external pure returns (bytes32 hash_);
+    function DOMAIN_SEPARATOR() external view returns (bytes32 domainSeparator_);
+
+    /**
+     *  @dev    Returns the block.chainid when the contract was instantiated.
+     *  @return chainId_ The block.chainid when the contract was instantiated.
+     */
+    function INITIAL_CHAIN_ID() external view returns (uint256 chainId_);
+
+    /**
+     *  @dev    Returns the signature domain separator when the contract was instantiated.
+     *  @return domainSeparator_ The domain for the contract.
+     */
+    function INITIAL_DOMAIN_SEPARATOR() external view returns (bytes32 domainSeparator_);
 
     /**
      *  @dev    Returns the nonce for the given owner.
@@ -32,9 +52,9 @@ interface IERC20Permit is IERC20 {
     function nonces(address owner) external view returns (uint256 nonce_);
 
     /**
-     *  @dev    Returns the signature domain separator.
-     *  @return domain_ The domain for the contract.
+     *  @dev    Returns the permit type hash.
+     *  @return hash_ The typehash for the commit.
      */
-    function DOMAIN_SEPARATOR() external view returns (bytes32 domain_);
+    function PERMIT_TYPEHASH() external view returns (bytes32 hash_);
 
 }
