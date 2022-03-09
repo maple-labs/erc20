@@ -69,6 +69,16 @@ contract ERC20Permit is IERC20Permit {
         return true;
     }
 
+    function decreaseAllowance(address spender_, uint256 subtractedAmount_) external override returns (bool success_) {
+        _approve(msg.sender, spender_, allowance[msg.sender][spender_] - subtractedAmount_);
+        return true;
+    }
+
+    function increaseAllowance(address spender_, uint256 addedAmount_) external override returns (bool success_) {
+        _approve(msg.sender, spender_, allowance[msg.sender][spender_] + addedAmount_);
+        return true;
+    }
+
     function permit(address owner, address spender, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external override {
         require(deadline >= block.timestamp, "ERC20Permit:EXPIRED");
         bytes32 digest = keccak256(

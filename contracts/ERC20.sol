@@ -40,6 +40,16 @@ contract ERC20 is IERC20 {
         return true;
     }
 
+    function decreaseAllowance(address spender_, uint256 subtractedAmount_) external override returns (bool success_) {
+        _approve(msg.sender, spender_, allowance[msg.sender][spender_] - subtractedAmount_);
+        return true;
+    }
+
+    function increaseAllowance(address spender_, uint256 addedAmount_) external override returns (bool success_) {
+        _approve(msg.sender, spender_, allowance[msg.sender][spender_] + addedAmount_);
+        return true;
+    }
+
     function transfer(address recipient_, uint256 amount_) external override returns (bool success_) {
         _transfer(msg.sender, recipient_, amount_);
         return true;
