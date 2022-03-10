@@ -227,9 +227,6 @@ contract ERC20PermitTest is TestUtils {
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, owner, skOwner, deadline);
 
         vm.expectRevert(bytes("ERC20:P:INVALID_SIGNATURE"));
-        user.erc20_permit(address(token), address(0), spender, amount, deadline, 17, r, s);  // https://ethereum.stackexchange.com/questions/69328/how-to-get-the-zero-address-from-ecrecover
-
-        vm.expectRevert(bytes("ERC20:P:INVALID_SIGNATURE"));
         user.erc20_permit(address(token), address(0), spender, amount, deadline, v, r, s);
     }
 
@@ -283,6 +280,39 @@ contract ERC20PermitTest is TestUtils {
 
         // Second time nonce has been consumed and should fail
         vm.expectRevert(bytes("ERC20:P:INVALID_SIGNATURE"));
+        user.erc20_permit(address(token), owner, spender, amount, deadline, v, r, s);
+    }
+
+    function test_permitBadS() external {
+        uint256 amount = 10 * WAD;
+        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, owner, skOwner, deadline);
+
+        // Send in an s that is above the upper bound.
+        bytes32 badS = bytes32(token.S_VALUE_INCLUSIVE_UPPER_BOUND() + 1);
+        vm.expectRevert(bytes("ERC20:P:MALLEABLE"));
+        user.erc20_permit(address(token), owner, spender, amount, deadline, v, r, badS);
+
+        user.erc20_permit(address(token), owner, spender, amount, deadline, v, r, s);
+    }
+
+    function test_permitBadV() external {
+        uint256 amount = 10 * WAD;
+        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, owner, skOwner, deadline);
+
+        // TODO: figure out why 255 does an arithmetic over/underflow.
+        for (uint8 i; i <= 254; i++) {
+            if (i == 28) {
+                continue;
+            } else if (i == 27) {
+                // Should get past the Malleable require check as 27 or 28 are valid values for s.
+                vm.expectRevert(bytes("ERC20:P:INVALID_SIGNATURE"));
+            } else {
+                vm.expectRevert(bytes("ERC20:P:MALLEABLE"));
+            }
+            user.erc20_permit(address(token), owner, spender, amount, deadline, i, r, s);
+        }
+
+        assertEq(v, 28);
         user.erc20_permit(address(token), owner, spender, amount, deadline, v, r, s);
     }
 
