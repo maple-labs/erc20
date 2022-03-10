@@ -299,9 +299,10 @@ contract ERC20PermitTest is TestUtils {
         uint256 amount = 10 * WAD;
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, owner, skOwner, deadline);
 
-        // TODO: figure out why 255 does an arithmetic over/underflow.
-        for (uint8 i; i <= 254; i++) {
-            if (i == 28) {
+        for (uint8 i; i <= type(uint8).max; i++) {
+            if (i == type(uint8).max) {
+                break;
+            } else if (i == 28) {
                 continue;
             } else if (i == 27) {
                 // Should get past the Malleable require check as 27 or 28 are valid values for s.
