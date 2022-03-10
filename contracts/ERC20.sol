@@ -29,7 +29,8 @@ contract ERC20 is IERC20 {
     /****************/
 
     // PERMIT_TYPEHASH = keccak256("Permit(address owner,address spender,uint256 amount,uint256 nonce,uint256 deadline)");
-    bytes32 public constant override PERMIT_TYPEHASH = 0xfc77c2b9d30fe91687fd39abb7d16fcdfe1472d065740051ab8b13e4bf4a617f;
+    bytes32 public constant override PERMIT_TYPEHASH      = 0xfc77c2b9d30fe91687fd39abb7d16fcdfe1472d065740051ab8b13e4bf4a617f;
+    uint256 public constant S_VALUE_INCLUSIVE_UPPER_BOUND = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0;
 
     mapping (address => uint256) public override nonces;
 
@@ -72,6 +73,11 @@ contract ERC20 is IERC20 {
                 keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, amount, nonces[owner]++, deadline))
             )
         );
+
+        // Appendix F in the Ethereum Yellow paper (https://ethereum.github.io/yellowpaper/paper.pdf), defines
+        // the valid range for s in (301): 0 < s < secp256k1n ÷ 2 + 1, and for v in (302): v ∈ {27, 28}.
+        require(uint256(s) <= S_VALUE_INCLUSIVE_UPPER_BOUND && (v == 27 || v == 28), "ERC20:P:MALLEABLE");
+
         address recoveredAddress = ecrecover(digest, v, r, s);
         require(recoveredAddress == owner && owner != address(0), "ERC20:P:INVALID_SIGNATURE");
         _approve(owner, spender, amount);
