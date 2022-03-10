@@ -9,6 +9,10 @@ import { IERC20 } from "./interfaces/IERC20.sol";
  */
 contract ERC20 is IERC20 {
 
+    /**************/
+    /*** ERC-20 ***/
+    /**************/
+
     string public override name;
     string public override symbol;
 
@@ -19,6 +23,15 @@ contract ERC20 is IERC20 {
     mapping(address => uint256) public override balanceOf;
 
     mapping(address => mapping(address => uint256)) public override allowance;
+
+    /****************/
+    /*** ERC-2612 ***/
+    /****************/
+
+    // PERMIT_TYPEHASH = keccak256("Permit(address owner,address spender,uint256 amount,uint256 nonce,uint256 deadline)");
+    bytes32 public constant override PERMIT_TYPEHASH = 0xfc77c2b9d30fe91687fd39abb7d16fcdfe1472d065740051ab8b13e4bf4a617f;
+
+    mapping (address => uint256) public override nonces;
 
     /**
      * @param name_     The name of the token.
@@ -50,6 +63,20 @@ contract ERC20 is IERC20 {
         return true;
     }
 
+    function permit(address owner, address spender, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external override {
+        require(deadline >= block.timestamp, "ERC20:P:EXPIRED");
+        bytes32 digest = keccak256(
+            abi.encodePacked(
+                "\x19\x01",
+                DOMAIN_SEPARATOR(),
+                keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, amount, nonces[owner]++, deadline))
+            )
+        );
+        address recoveredAddress = ecrecover(digest, v, r, s);
+        require(recoveredAddress == owner && owner != address(0), "ERC20:P:INVALID_SIGNATURE");
+        _approve(owner, spender, amount);
+    }
+
     function transfer(address recipient_, uint256 amount_) external override returns (bool success_) {
         _transfer(msg.sender, recipient_, amount_);
         return true;
@@ -59,6 +86,22 @@ contract ERC20 is IERC20 {
         _approve(owner_, msg.sender, allowance[owner_][msg.sender] - amount_);
         _transfer(owner_, recipient_, amount_);
         return true;
+    }
+
+    /**********************/
+    /*** View Functions ***/
+    /**********************/
+
+    function DOMAIN_SEPARATOR() public view override returns (bytes32 domainSeparator_) {
+        return keccak256(
+            abi.encode(
+                keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
+                keccak256(bytes(name)),
+                keccak256(bytes("1")),
+                block.chainid,
+                address(this)
+            )
+        );
     }
 
     /**************************/
