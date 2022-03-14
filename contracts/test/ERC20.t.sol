@@ -297,6 +297,10 @@ contract ERC20PermitTest is TestUtils {
 
     function test_permitBadV() external {
         uint256 amount = 10 * WAD;
+
+        // Get valid signature. The `v` value is the expected v value that will cause `permit` to succeed, and must be 27 or 28.
+        // Any other value should fail. 
+        // If v is 27, then 28 should make it past the MALLEABLE require, but should result in an invalid signature, and vice versa when v is 28.
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, owner, skOwner, deadline);
 
         for (uint8 i; i <= type(uint8).max; i++) {
