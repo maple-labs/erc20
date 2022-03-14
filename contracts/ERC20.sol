@@ -125,8 +125,7 @@ contract ERC20 is IERC20 {
     function _burn(address owner_, uint256 amount_) internal {
         balanceOf[owner_] -= amount_;
 
-        // Cannot underflow because a user's balance
-        // will never be larger than the total supply.
+        // Cannot underflow because a user's balance will never be larger than the total supply.
         unchecked {
             totalSupply -= amount_;
         }
