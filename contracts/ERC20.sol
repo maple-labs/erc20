@@ -66,20 +66,24 @@ contract ERC20 is IERC20 {
 
     function permit(address owner, address spender, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external override {
         require(deadline >= block.timestamp, "ERC20:P:EXPIRED");
-        bytes32 digest = keccak256(
-            abi.encodePacked(
-                "\x19\x01",
-                DOMAIN_SEPARATOR(),
-                keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, amount, nonces[owner]++, deadline))
-            )
-        );
 
         // Appendix F in the Ethereum Yellow paper (https://ethereum.github.io/yellowpaper/paper.pdf), defines
         // the valid range for s in (301): 0 < s < secp256k1n ÷ 2 + 1, and for v in (302): v ∈ {27, 28}.
         require(uint256(s) <= S_VALUE_INCLUSIVE_UPPER_BOUND && (v == 27 || v == 28), "ERC20:P:MALLEABLE");
-
-        address recoveredAddress = ecrecover(digest, v, r, s);
-        require(recoveredAddress == owner && owner != address(0), "ERC20:P:INVALID_SIGNATURE");
+        
+        // Nonce realistically cannot overflow.
+        unchecked {
+            bytes32 digest = keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    DOMAIN_SEPARATOR(),
+                    keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, amount, nonces[owner]++, deadline))
+                )
+            );
+            address recoveredAddress = ecrecover(digest, v, r, s);
+            require(recoveredAddress == owner && owner != address(0), "ERC20:P:INVALID_SIGNATURE");
+        }
+        
         _approve(owner, spender, amount);
     }
 
@@ -120,21 +124,33 @@ contract ERC20 is IERC20 {
 
     function _burn(address owner_, uint256 amount_) internal {
         balanceOf[owner_] -= amount_;
-        totalSupply       -= amount_;
 
+        // Cannot underflow because a user's balance will never be larger than the total supply.
+        unchecked {
+            totalSupply -= amount_;
+        }
+        
         emit Transfer(owner_, address(0), amount_);
     }
 
     function _mint(address recipient_, uint256 amount_) internal {
-        totalSupply           += amount_;
-        balanceOf[recipient_] += amount_;
+        totalSupply += amount_;
+
+        // Cannot overflow because totalSupply would first overflow in the statement above.
+        unchecked {
+            balanceOf[recipient_] += amount_;
+        }
 
         emit Transfer(address(0), recipient_, amount_);
     }
 
     function _transfer(address owner_, address recipient_, uint256 amount_) internal {
-        balanceOf[owner_]     -= amount_;
-        balanceOf[recipient_] += amount_;
+        balanceOf[owner_] -= amount_;
+
+        // Cannot overflow because minting prevents overflow of totalSupply, and sum of user balances == totalSupply.
+        unchecked {
+            balanceOf[recipient_] += amount_;
+        }
 
         emit Transfer(owner_, recipient_, amount_);
     }
