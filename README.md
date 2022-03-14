@@ -6,8 +6,8 @@
 
 Basic ERC-20 contract designed to be inherited and extended. Leveraging native overflow checks in solc 0.8 to simplify ERC-20 implementation. It should be noted that this ERC-20 implementation does not include some functionality that is commonly used in other tokens, such as:
 - `address(0)` checks on `_transfer`
-- `increaseAllowance`
-- `decreaseAllowance`
+- `push`
+- `pull`
 
 This was intentional, as this ERC-20 was intended to have the minimum functionality necessary, allowing for maximum extendability and customizability.
 
