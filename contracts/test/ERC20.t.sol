@@ -302,18 +302,20 @@ contract ERC20PermitTest is TestUtils {
         for (uint8 i; i <= type(uint8).max; i++) {
             if (i == type(uint8).max) {
                 break;
-            } else if (i == 28) {
-                continue;
-            } else if (i == 27) {
-                // Should get past the Malleable require check as 27 or 28 are valid values for s.
-                vm.expectRevert(bytes("ERC20:P:INVALID_SIGNATURE"));
-            } else {
+            } else if (i != 27 && i != 28) {
                 vm.expectRevert(bytes("ERC20:P:MALLEABLE"));
+            } else {
+                if (i == v) {
+                    continue;
+                } else {
+
+                    // Should get past the Malleable require check as 27 or 28 are valid values for s.
+                    vm.expectRevert(bytes("ERC20:P:INVALID_SIGNATURE"));
+                }
             }
             user.erc20_permit(address(token), owner, spender, amount, deadline, i, r, s);
         }
 
-        assertEq(v, 28);
         user.erc20_permit(address(token), owner, spender, amount, deadline, v, r, s);
     }
 
