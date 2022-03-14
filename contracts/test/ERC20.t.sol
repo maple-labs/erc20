@@ -308,7 +308,6 @@ contract ERC20PermitTest is TestUtils {
                 if (i == v) {
                     continue;
                 } else {
-
                     // Should get past the Malleable require check as 27 or 28 are valid values for s.
                     vm.expectRevert(bytes("ERC20:P:INVALID_SIGNATURE"));
                 }
