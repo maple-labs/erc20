@@ -113,8 +113,8 @@ interface IERC20 {
     function decimals() external view returns (uint8 decimals_);
 
     /**
-     * @dev    Returns the signature domain separator.
-     * @return domainSeparator_ The signature domain separator.
+     *  @dev    Returns the signature domain separator.
+     *  @return domainSeparator_ The signature domain separator.
      */
     function DOMAIN_SEPARATOR() external view returns (bytes32 domainSeparator_);
 
@@ -125,9 +125,9 @@ interface IERC20 {
     function name() external view returns (string memory name_);
 
     /**
-      * @dev    Returns the nonce for the given owner.
-      * @param  owner  The address of the owner account.
-      * @return nonce_ The nonce for the given owner.
+      *  @dev    Returns the nonce for the given owner.
+      *  @param  owner  The address of the owner account.
+      *  @return nonce_ The nonce for the given owner.
      */
     function nonces(address owner) external view returns (uint256 nonce_);
 
