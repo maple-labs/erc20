@@ -29,7 +29,7 @@ contract ERC20 is IERC20 {
     /****************/
 
     // PERMIT_TYPEHASH = keccak256("Permit(address owner,address spender,uint256 amount,uint256 nonce,uint256 deadline)");
-    bytes32 public constant override PERMIT_TYPEHASH = 0xfc77c2b9d30fe91687fd39abb7d16fcdfe1472d065740051ab8b13e4bf4a617f;
+    bytes32 public constant override PERMIT_TYPEHASH = bytes32(0xfc77c2b9d30fe91687fd39abb7d16fcdfe1472d065740051ab8b13e4bf4a617f);
 
     mapping(address => uint256) public override nonces;
 
@@ -63,14 +63,14 @@ contract ERC20 is IERC20 {
         return true;
     }
 
-    function permit(address owner, address spender, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external override {
-        require(deadline >= block.timestamp, "ERC20:P:EXPIRED");
+    function permit(address owner_, address spender_, uint256 amount_, uint256 deadline_, uint8 v_, bytes32 r_, bytes32 s_) external override {
+        require(deadline_ >= block.timestamp, "ERC20:P:EXPIRED");
 
         // Appendix F in the Ethereum Yellow paper (https://ethereum.github.io/yellowpaper/paper.pdf), defines
         // the valid range for s in (301): 0 < s < secp256k1n ÷ 2 + 1, and for v in (302): v ∈ {27, 28}.
         require(
-            uint256(s) <= 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0 &&
-            (v == 27 || v == 28),
+            uint256(s_) <= 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0 &&
+            (v_ == 27 || v_ == 28),
             "ERC20:P:MALLEABLE"
         );
 
@@ -80,14 +80,16 @@ contract ERC20 is IERC20 {
                 abi.encodePacked(
                     "\x19\x01",
                     DOMAIN_SEPARATOR(),
-                    keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, amount, nonces[owner]++, deadline))
+                    keccak256(abi.encode(PERMIT_TYPEHASH, owner_, spender_, amount_, nonces[owner_]++, deadline_))
                 )
             );
-            address recoveredAddress = ecrecover(digest, v, r, s);
-            require(recoveredAddress == owner && owner != address(0), "ERC20:P:INVALID_SIGNATURE");
+
+            address recoveredAddress = ecrecover(digest, v_, r_, s_);
+
+            require(recoveredAddress == owner_ && owner_ != address(0), "ERC20:P:INVALID_SIGNATURE");
         }
 
-        _approve(owner, spender, amount);
+        _approve(owner_, spender_, amount_);
     }
 
     function transfer(address recipient_, uint256 amount_) external override returns (bool success_) {
