@@ -179,6 +179,8 @@ contract ERC20PermitTest is TestUtils {
 
     bytes constant ARITHMETIC_ERROR = abi.encodeWithSignature("Panic(uint256)", 0x11);
 
+    uint256 constant S_VALUE_INCLUSIVE_UPPER_BOUND = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0;
+
     ERC20     token;
     ERC20User user;
 
@@ -222,7 +224,7 @@ contract ERC20PermitTest is TestUtils {
         assertEq(token.nonces(owner),             1);
     }
 
-    function test_permitZeroAddress() external {
+    function test_permit_zeroAddress() external {
         uint256 amount = 10 * WAD;
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, owner, skOwner, deadline);
 
@@ -230,7 +232,7 @@ contract ERC20PermitTest is TestUtils {
         user.erc20_permit(address(token), address(0), spender, amount, deadline, v, r, s);
     }
 
-    function test_permitNonOwnerAddress() external {
+    function test_permit_nonOwnerAddress() external {
         uint256 amount = 10 * WAD;
 
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, owner, skOwner, deadline);
@@ -244,7 +246,7 @@ contract ERC20PermitTest is TestUtils {
         user.erc20_permit(address(token), owner, spender, amount, deadline, v, r, s);
     }
 
-    function test_permitWithExpiry() external {
+    function test_permit_withExpiry() external {
         uint256 amount = 10 * WAD;
         uint256 expiry = 482112000 + 1 hours;
 
@@ -271,7 +273,7 @@ contract ERC20PermitTest is TestUtils {
         assertEq(token.nonces(owner),             1);
     }
 
-    function test_permitReplay() external {
+    function test_permit_replay() external {
         uint256 amount = 10 * WAD;
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, owner, skOwner, deadline);
 
@@ -283,23 +285,23 @@ contract ERC20PermitTest is TestUtils {
         user.erc20_permit(address(token), owner, spender, amount, deadline, v, r, s);
     }
 
-    function test_permitBadS() external {
+    function test_permit_badS() external {
         uint256 amount = 10 * WAD;
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, owner, skOwner, deadline);
 
         // Send in an s that is above the upper bound.
-        bytes32 badS = bytes32(token.S_VALUE_INCLUSIVE_UPPER_BOUND() + 1);
+        bytes32 badS = bytes32(S_VALUE_INCLUSIVE_UPPER_BOUND + 1);
         vm.expectRevert(bytes("ERC20:P:MALLEABLE"));
         user.erc20_permit(address(token), owner, spender, amount, deadline, v, r, badS);
 
         user.erc20_permit(address(token), owner, spender, amount, deadline, v, r, s);
     }
 
-    function test_permitBadV() external {
+    function test_permit_badV() external {
         uint256 amount = 10 * WAD;
 
         // Get valid signature. The `v` value is the expected v value that will cause `permit` to succeed, and must be 27 or 28.
-        // Any other value should fail. 
+        // Any other value should fail.
         // If v is 27, then 28 should make it past the MALLEABLE require, but should result in an invalid signature, and vice versa when v is 28.
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, owner, skOwner, deadline);
 

@@ -5,7 +5,7 @@ import { ERC20 } from "../../ERC20.sol";
 
 contract MockERC20 is ERC20 {
 
-    constructor(string memory name_, string memory symbol_, uint8 decimals_) ERC20(name_, symbol_, decimals_) {}
+    constructor(string memory name_, string memory symbol_, uint8 decimals_) ERC20(name_, symbol_, decimals_) { }
 
     function mint(address to_, uint256 value_) external {
         _mint(to_, value_);

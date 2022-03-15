@@ -92,54 +92,60 @@ interface IERC20 {
     /**********************/
 
     /**
-     *  @dev   Function that returns the allowance that one account has given another over their tokens.
-     *  @param owner_   Account that tokens are approved from.
-     *  @param spender_ Account that tokens are approved for.
+     *  @dev    Returns the allowance that one account has given another over their tokens.
+     *  @param  owner_     Account that tokens are approved from.
+     *  @param  spender_   Account that tokens are approved for.
+     *  @return allowance_ Allowance that one account has given another over their tokens.
      */
     function allowance(address owner_, address spender_) external view returns (uint256 allowance_);
 
     /**
-     *  @dev   Returns the amount of tokens owned by a given account.
-     *  @param account_ Account that owns the tokens.
+     *  @dev    Returns the amount of tokens owned by a given account.
+     *  @param  account_ Account that owns the tokens.
+     *  @return balance_ Amount of tokens owned by a given account.
      */
     function balanceOf(address account_) external view returns (uint256 balance_);
 
     /**
-     *  @dev Returns the decimal precision used by the token.
+     *  @dev    Returns the decimal precision used by the token.
+     *  @return decimals_ The decimal precision used by the token.
      */
     function decimals() external view returns (uint8 decimals_);
 
     /**
-     * @dev    Returns the signature domain separator.
-     * @return domainSeparator_ The domain for the contract.
+     *  @dev    Returns the signature domain separator.
+     *  @return domainSeparator_ The signature domain separator.
      */
     function DOMAIN_SEPARATOR() external view returns (bytes32 domainSeparator_);
 
     /**
-     *  @dev Returns the name of the token.
+     *  @dev    Returns the name of the token.
+     *  @return name_ The name of the token.
      */
     function name() external view returns (string memory name_);
 
     /**
-      * @dev    Returns the nonce for the given owner.
-      * @param  owner The address of the owner account.
-      * @return nonce_ The current nonce.
+      *  @dev    Returns the nonce for the given owner.
+      *  @param  owner  The address of the owner account.
+      *  @return nonce_ The nonce for the given owner.
      */
     function nonces(address owner) external view returns (uint256 nonce_);
 
     /**
      *  @dev    Returns the permit type hash.
-     *  @return hash_ The typehash for the commit.
+     *  @return hash_ The permit type hash.
      */
     function PERMIT_TYPEHASH() external view returns (bytes32 hash_);
 
     /**
-     *  @dev Returns the symbol of the token.
+     *  @dev    Returns the symbol of the token.
+     *  @return symbol_ The symbol of the token.
      */
     function symbol() external view returns (string memory symbol_);
 
     /**
-     *  @dev Returns the total amount of tokens in existence.
+     *  @dev    Returns the total amount of tokens in existence.
+     *  @return totalSupply_ The total amount of tokens in existence.
      */
     function totalSupply() external view returns (uint256 totalSupply_);
 
