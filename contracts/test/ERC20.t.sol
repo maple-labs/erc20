@@ -18,17 +18,17 @@ contract ERC20BaseTest is TestUtils {
 
     MockERC20 internal _token;
 
-    function setUp() external virtual {
+    function setUp() public virtual {
         _token = new MockERC20("Token", "TKN", 18);
     }
 
-    function invariant_metadata() external {
+    function invariant_metadata() public {
         assertEq(_token.name(),     "Token");
         assertEq(_token.symbol(),   "TKN");
         assertEq(_token.decimals(), 18);
     }
 
-    function testFuzz_metadata(string memory name_, string memory symbol_, uint8 decimals_) external {
+    function testFuzz_metadata(string memory name_, string memory symbol_, uint8 decimals_) public {
         MockERC20 mockToken = new MockERC20(name_, symbol_, decimals_);
 
         assertEq(mockToken.name(),     name_);
@@ -36,14 +36,14 @@ contract ERC20BaseTest is TestUtils {
         assertEq(mockToken.decimals(), decimals_);
     }
 
-    function testFuzz_mint(address account_, uint256 amount_) external {
+    function testFuzz_mint(address account_, uint256 amount_) public {
         _token.mint(account_, amount_);
 
         assertEq(_token.totalSupply(),       amount_);
         assertEq(_token.balanceOf(account_), amount_);
     }
 
-    function testFuzz_burn(address account_, uint256 amount0_, uint256 amount1_) external {
+    function testFuzz_burn(address account_, uint256 amount0_, uint256 amount1_) public {
         if (amount1_ > amount0_) return;  // Mint amount must exceed burn amount.
 
         _token.mint(account_, amount0_);
@@ -53,13 +53,13 @@ contract ERC20BaseTest is TestUtils {
         assertEq(_token.balanceOf(account_), amount0_ - amount1_);
     }
 
-    function testFuzz_approve(address account_, uint256 amount_) external {
+    function testFuzz_approve(address account_, uint256 amount_) public {
         assertTrue(_token.approve(account_, amount_));
 
         assertEq(_token.allowance(self, account_), amount_);
     }
 
-    function testFuzz_increaseAllowance(address account_, uint256 initialAmount_, uint256 addedAmount_) external {
+    function testFuzz_increaseAllowance(address account_, uint256 initialAmount_, uint256 addedAmount_) public {
         initialAmount_ = constrictToRange(initialAmount_, 0, type(uint256).max / 2);
         addedAmount_   = constrictToRange(addedAmount_,   0, type(uint256).max / 2);
 
@@ -72,7 +72,7 @@ contract ERC20BaseTest is TestUtils {
         assertEq(_token.allowance(self, account_), initialAmount_ + addedAmount_);
     }
 
-    function testFuzz_decreaseAllowance(address account_, uint256 initialAmount_, uint256 subtractedAmount_) external {
+    function testFuzz_decreaseAllowance(address account_, uint256 initialAmount_, uint256 subtractedAmount_) public {
         initialAmount_    = constrictToRange(initialAmount_,    0, type(uint256).max);
         subtractedAmount_ = constrictToRange(subtractedAmount_, 0, initialAmount_);
 
@@ -85,7 +85,7 @@ contract ERC20BaseTest is TestUtils {
         assertEq(_token.allowance(self, account_), initialAmount_ - subtractedAmount_);
     }
 
-    function testFuzz_transfer(address account_, uint256 amount_) external {
+    function testFuzz_transfer(address account_, uint256 amount_) public {
         _token.mint(self, amount_);
 
         assertTrue(_token.transfer(account_, amount_));
@@ -100,7 +100,7 @@ contract ERC20BaseTest is TestUtils {
         }
     }
 
-    function testFuzz_transferFrom(address recipient_, uint256 approval_, uint256 amount_) external {
+    function testFuzz_transferFrom(address recipient_, uint256 approval_, uint256 amount_) public {
         if (amount_ > approval_) return;  // Owner must approve for more than amount.
 
         ERC20User owner = new ERC20User();
@@ -124,7 +124,7 @@ contract ERC20BaseTest is TestUtils {
         }
     }
 
-    function testFuzz_transfer_insufficientBalance(address recipient_, uint256 amount_) external {
+    function testFuzz_transfer_insufficientBalance(address recipient_, uint256 amount_) public {
         amount_ = amount_ == 0 ? 1 : amount_;
 
         ERC20User account = new ERC20User();
@@ -140,7 +140,7 @@ contract ERC20BaseTest is TestUtils {
         assertEq(_token.balanceOf(recipient_), amount_);
     }
 
-    function testFuzz_transferFrom_insufficientAllowance(address recipient_, uint256 amount_) external {
+    function testFuzz_transferFrom_insufficientAllowance(address recipient_, uint256 amount_) public {
         amount_ = amount_ == 0 ? 1 : amount_;
 
         ERC20User owner = new ERC20User();
@@ -158,7 +158,7 @@ contract ERC20BaseTest is TestUtils {
         assertEq(_token.balanceOf(recipient_), amount_);
     }
 
-    function testFuzz_transferFrom_insufficientBalance(address recipient_, uint256 amount_) external {
+    function testFuzz_transferFrom_insufficientBalance(address recipient_, uint256 amount_) public {
         amount_ = amount_ == 0 ? 1 : amount_;
 
         ERC20User owner = new ERC20User();
@@ -195,7 +195,7 @@ contract ERC20PermitTest is TestUtils {
     ERC20     internal _token;
     ERC20User internal _user;
 
-    function setUp() external virtual {
+    function setUp() public virtual {
         _owner   = vm.addr(_skOwner);
         _spender = vm.addr(_skSpender);
 
@@ -205,16 +205,16 @@ contract ERC20PermitTest is TestUtils {
         _user  = new ERC20User();
     }
 
-    function test_typehash() external {
+    function test_typehash() public {
         assertEq(_token.PERMIT_TYPEHASH(), keccak256("Permit(address owner,address spender,uint256 amount,uint256 nonce,uint256 deadline)"));
     }
 
     // NOTE: Virtual so inheriting tests can override with different DOMAIN_SEPARATORs because of different addresses
-    function test_domainSeparator() external virtual {
+    function test_domainSeparator() public virtual {
         assertEq(_token.DOMAIN_SEPARATOR(), 0x06c0ee43424d25534e5af6b6af862333b542f6583ff9948b8299442926099eec);
     }
 
-    function test_initialState() external {
+    function test_initialState() public {
         assertEq(_token.nonces(_owner),              0);
         assertEq(_token.allowance(_owner, _spender), 0);
     }
@@ -231,20 +231,20 @@ contract ERC20PermitTest is TestUtils {
         assertEq(_token.allowance(_owner, _spender), amount_);
     }
 
-    function testFuzz_permit_multiple(bytes32 seed_) external {
+    function testFuzz_permit_multiple(bytes32 seed_) public {
         for (uint256 i; i < 10; ++i) {
             testFuzz_permit(uint256(keccak256(abi.encodePacked(seed_, i))));
         }
     }
 
-    function test_permit_zeroAddress() external {
+    function test_permit_zeroAddress() public {
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(address(_token), _owner, _spender, 1000, 0, _deadline, _skOwner);
 
         vm.expectRevert("ERC20:P:INVALID_SIGNATURE");
         _user.erc20_permit(address(_token), address(0), _spender, 1000, _deadline, v, r, s);
     }
 
-    function test_permit_differentSpender() external {
+    function test_permit_differentSpender() public {
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(address(_token), _owner, address(1111), 1000, 0, _deadline, _skOwner);
 
         // Using permit with unintended spender should fail.
@@ -252,14 +252,14 @@ contract ERC20PermitTest is TestUtils {
         _user.erc20_permit(address(_token), _owner, _spender, 1000, _deadline, v, r, s);
     }
 
-    function test_permit_ownerSignerMismatch() external {
+    function test_permit_ownerSignerMismatch() public {
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(address(_token), _owner, _spender, 1000, 0, _deadline, _skSpender);
 
         vm.expectRevert("ERC20:P:INVALID_SIGNATURE");
         _user.erc20_permit(address(_token), _owner, _spender, 1000, _deadline, v, r, s);
     }
 
-    function test_permit_withExpiry() external {
+    function test_permit_withExpiry() public {
         uint256 expiry = 482112000 + 1 hours;
 
         // Expired permit should fail
@@ -288,7 +288,7 @@ contract ERC20PermitTest is TestUtils {
         assertEq(_token.nonces(_owner),              1);
     }
 
-    function test_permit_replay() external {
+    function test_permit_replay() public {
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(address(_token), _owner, _spender, 1000, 0, _deadline, _skOwner);
 
         // First time should succeed
@@ -299,7 +299,7 @@ contract ERC20PermitTest is TestUtils {
         _user.erc20_permit(address(_token), _owner, _spender, 1000, _deadline, v, r, s);
     }
 
-    function test_permit_earlyNonce() external {
+    function test_permit_earlyNonce() public {
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(address(_token), _owner, _spender, 1000, 1, _deadline, _skOwner);
 
         // Previous nonce of 0 has not been consumed yet, so nonce of 1 should fail.
@@ -307,7 +307,7 @@ contract ERC20PermitTest is TestUtils {
         _user.erc20_permit(address(_token), _owner, _spender, 1000, _deadline, v, r, s);
     }
 
-    function test_permit_differentVerifier() external {
+    function test_permit_differentVerifier() public {
         address someToken = address(new ERC20("Some Token", "ST", 18));
 
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(someToken, _owner, _spender, 1000, 0, _deadline, _skOwner);
@@ -317,7 +317,7 @@ contract ERC20PermitTest is TestUtils {
         _user.erc20_permit(address(_token), _owner, _spender, 1000, _deadline, v, r, s);
     }
 
-    function test_permit_badS() external {
+    function test_permit_badS() public {
         ( uint8 v, bytes32 r, ) = _getValidPermitSignature(address(_token), _owner, _spender, 1000, 0, _deadline, _skOwner);
 
         // Send in an s that is above the upper bound.
@@ -326,7 +326,7 @@ contract ERC20PermitTest is TestUtils {
         _user.erc20_permit(address(_token), _owner, _spender, 1000, _deadline, v, r, badS);
     }
 
-    function test_permit_badV() external {
+    function test_permit_badV() public {
         // Get valid signature. The `v` value is the expected v value that will cause `permit` to succeed, and must be 27 or 28.
         // Any other value should fail.
         // If v is 27, then 28 should make it past the MALLEABLE require, but should result in an invalid signature, and vice versa when v is 28.
@@ -370,13 +370,13 @@ contract ERC20Invariants is TestUtils, InvariantTest {
 
     BalanceSum internal _balanceSum;
 
-    function setUp() external {
+    function setUp() public {
         _balanceSum = new BalanceSum();
 
         addTargetContract(address(_balanceSum));
     }
 
-    function invariant_balanceSum() external {
+    function invariant_balanceSum() public {
         assertEq(_balanceSum.token().totalSupply(), _balanceSum.sum());
     }
 
@@ -388,25 +388,25 @@ contract BalanceSum {
 
     uint256 public sum;
 
-    function mint(address recipient_, uint256 amount_) external {
+    function mint(address recipient_, uint256 amount_) public {
         token.mint(recipient_, amount_);
         sum += amount_;
     }
 
-    function burn(address owner_, uint256 amount_) external {
+    function burn(address owner_, uint256 amount_) public {
         token.burn(owner_, amount_);
         sum -= amount_;
     }
 
-    function approve(address spender_, uint256 amount_) external {
+    function approve(address spender_, uint256 amount_) public {
         token.approve(spender_, amount_);
     }
 
-    function transferFrom(address owner_, address recipient_, uint256 amount_) external {
+    function transferFrom(address owner_, address recipient_, uint256 amount_) public {
         token.transferFrom(owner_, recipient_, amount_);
     }
 
-    function transfer(address recipient_, uint256 amount_) external {
+    function transfer(address recipient_, uint256 amount_) public {
         token.transfer(recipient_, amount_);
     }
 
