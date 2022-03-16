@@ -9,20 +9,20 @@ interface IERC20 {
     /**************/
 
     /**
-     *  @dev   Emits an event indicating that tokens have moved from one account to another.
-     *  @param owner_     Account that tokens have moved from.
-     *  @param recipient_ Account that tokens have moved to.
-     *  @param amount_    Amount of tokens that have been transferred.
-     */
-    event Transfer(address indexed owner_, address indexed recipient_, uint256 amount_);
-
-    /**
      *  @dev   Emits an event indicating that one account has set the allowance of another account over their tokens.
      *  @param owner_   Account that tokens are approved from.
      *  @param spender_ Account that tokens are approved for.
      *  @param amount_  Amount of tokens that have been approved.
      */
     event Approval(address indexed owner_, address indexed spender_, uint256 amount_);
+
+    /**
+     *  @dev   Emits an event indicating that tokens have moved from one account to another.
+     *  @param owner_     Account that tokens have moved from.
+     *  @param recipient_ Account that tokens have moved to.
+     *  @param amount_    Amount of tokens that have been transferred.
+     */
+    event Transfer(address indexed owner_, address indexed recipient_, uint256 amount_);
 
     /**************************/
     /*** External Functions ***/
@@ -133,9 +133,9 @@ interface IERC20 {
 
     /**
      *  @dev    Returns the permit type hash.
-     *  @return hash_ The permit type hash.
+     *  @return permitTypehash_ The permit type hash.
      */
-    function PERMIT_TYPEHASH() external view returns (bytes32 hash_);
+    function PERMIT_TYPEHASH() external view returns (bytes32 permitTypehash_);
 
     /**
      *  @dev    Returns the symbol of the token.
