@@ -3,6 +3,15 @@ pragma solidity ^0.8.7;
 
 import { IERC20 } from "./interfaces/IERC20.sol";
 
+/*
+    ███████╗██████╗  ██████╗    ██████╗  ██████╗
+    ██╔════╝██╔══██╗██╔════╝    ╚════██╗██╔═████╗
+    █████╗  ██████╔╝██║          █████╔╝██║██╔██║
+    ██╔══╝  ██╔══██╗██║         ██╔═══╝ ████╔╝██║
+    ███████╗██║  ██║╚██████╗    ███████╗╚██████╔╝
+    ╚══════╝╚═╝  ╚═╝ ╚═════╝    ╚══════╝ ╚═════╝
+*/
+
 /**
  *  @title Modern ERC-20 implementation.
  *  @dev   Acknowledgements to Solmate, OpenZeppelin, and DSS for inspiring this code.
