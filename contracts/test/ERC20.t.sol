@@ -3,6 +3,8 @@ pragma solidity ^0.8.7;
 
 import { InvariantTest, TestUtils } from "../../modules/contract-test-utils/contracts/test.sol";
 
+import { IERC20 } from "../interfaces/IERC20.sol";
+
 import { ERC20 } from "../ERC20.sol";
 
 import { ERC20User } from "./accounts/ERC20User.sol";
@@ -212,45 +214,52 @@ contract ERC20PermitTest is TestUtils {
         assertEq(_token.DOMAIN_SEPARATOR(), 0x06c0ee43424d25534e5af6b6af862333b542f6583ff9948b8299442926099eec);
     }
 
-    function test_permit() external {
-        uint256 amount = 10 * WAD;
-
+    function test_initialState() external {
         assertEq(_token.nonces(_owner),              0);
         assertEq(_token.allowance(_owner, _spender), 0);
+    }
 
-        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, _owner, _skOwner, _deadline);
+    function testFuzz_permit(uint256 amount_) public {
+        uint256 startingNonce = _token.nonces(_owner);
+        uint256 expectedNonce = startingNonce + 1;
 
-        _user.erc20_permit(address(_token), _owner, _spender, amount, _deadline, v, r, s);
+        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(address(_token), _owner, _spender, amount_, startingNonce, _deadline, _skOwner);
 
-        assertEq(_token.allowance(_owner, _spender), amount);
-        assertEq(_token.nonces(_owner),              1);
+        _user.erc20_permit(address(_token), _owner, _spender, amount_, _deadline, v, r, s);
+
+        assertEq(_token.nonces(_owner),              expectedNonce);
+        assertEq(_token.allowance(_owner, _spender), amount_);
+    }
+
+    function testFuzz_permit_multiple(bytes32 seed_) external {
+        for (uint256 i; i < 10; ++i) {
+            testFuzz_permit(uint256(keccak256(abi.encodePacked(seed_, i))));
+        }
     }
 
     function test_permit_zeroAddress() external {
-        uint256 amount = 10 * WAD;
-
-        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, _owner, _skOwner, _deadline);
+        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(address(_token), _owner, _spender, 1000, 0, _deadline, _skOwner);
 
         vm.expectRevert("ERC20:P:INVALID_SIGNATURE");
-        _user.erc20_permit(address(_token), address(0), _spender, amount, _deadline, v, r, s);
+        _user.erc20_permit(address(_token), address(0), _spender, 1000, _deadline, v, r, s);
     }
 
-    function test_permit_nonOwnerAddress() external {
-        uint256 amount = 10 * WAD;
+    function test_permit_differentSpender() external {
+        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(address(_token), _owner, address(1111), 1000, 0, _deadline, _skOwner);
 
-        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, _owner, _skOwner, _deadline);
+        // Using permit with unintended spender should fail.
+        vm.expectRevert("ERC20:P:INVALID_SIGNATURE");
+        _user.erc20_permit(address(_token), _owner, _spender, 1000, _deadline, v, r, s);
+    }
+
+    function test_permit_ownerSignerMismatch() external {
+        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(address(_token), _owner, _spender, 1000, 0, _deadline, _skSpender);
 
         vm.expectRevert("ERC20:P:INVALID_SIGNATURE");
-        _user.erc20_permit(address(_token), _spender, _owner, amount, _deadline, v,  r,  s);
-
-        ( v, r, s ) = _getValidPermitSignature(amount, _spender, _skSpender, _deadline);
-
-        vm.expectRevert("ERC20:P:INVALID_SIGNATURE");
-        _user.erc20_permit(address(_token), _owner, _spender, amount, _deadline, v, r, s);
+        _user.erc20_permit(address(_token), _owner, _spender, 1000, _deadline, v, r, s);
     }
 
     function test_permit_withExpiry() external {
-        uint256 amount = 10 * WAD;
         uint256 expiry = 482112000 + 1 hours;
 
         // Expired permit should fail
@@ -258,10 +267,10 @@ contract ERC20PermitTest is TestUtils {
 
         assertEq(block.timestamp, 482112000 + 1 hours + 1);
 
-        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, _owner, _skOwner, expiry);
+        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(address(_token), _owner, _spender, 1000, 0, expiry, _skOwner);
 
         vm.expectRevert("ERC20:P:EXPIRED");
-        _user.erc20_permit(address(_token), _owner, _spender, amount, expiry, v, r, s);
+        _user.erc20_permit(address(_token), _owner, _spender, 1000, expiry, v, r, s);
 
         assertEq(_token.allowance(_owner, _spender), 0);
         assertEq(_token.nonces(_owner),              0);
@@ -271,46 +280,57 @@ contract ERC20PermitTest is TestUtils {
 
         assertEq(block.timestamp, 482112000 + 1 hours);
 
-        ( v, r, s ) = _getValidPermitSignature(amount, _owner, _skOwner, expiry);
+        ( v, r, s ) = _getValidPermitSignature(address(_token), _owner, _spender, 1000, 0, expiry, _skOwner);
 
-        _user.erc20_permit(address(_token), _owner, _spender, amount, expiry, v, r, s);
+        _user.erc20_permit(address(_token), _owner, _spender, 1000, expiry, v, r, s);
 
-        assertEq(_token.allowance(_owner, _spender), amount);
+        assertEq(_token.allowance(_owner, _spender), 1000);
         assertEq(_token.nonces(_owner),              1);
     }
 
     function test_permit_replay() external {
-        uint256 amount = 10 * WAD;
-
-        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, _owner, _skOwner, _deadline);
+        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(address(_token), _owner, _spender, 1000, 0, _deadline, _skOwner);
 
         // First time should succeed
-        _user.erc20_permit(address(_token), _owner, _spender, amount, _deadline, v, r, s);
+        _user.erc20_permit(address(_token), _owner, _spender, 1000, _deadline, v, r, s);
 
         // Second time nonce has been consumed and should fail
         vm.expectRevert("ERC20:P:INVALID_SIGNATURE");
-        _user.erc20_permit(address(_token), _owner, _spender, amount, _deadline, v, r, s);
+        _user.erc20_permit(address(_token), _owner, _spender, 1000, _deadline, v, r, s);
+    }
+
+    function test_permit_earlyNonce() external {
+        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(address(_token), _owner, _spender, 1000, 1, _deadline, _skOwner);
+
+        // Previous nonce of 0 has not been consumed yet, so nonce of 1 should fail.
+        vm.expectRevert("ERC20:P:INVALID_SIGNATURE");
+        _user.erc20_permit(address(_token), _owner, _spender, 1000, _deadline, v, r, s);
+    }
+
+    function test_permit_differentVerifier() external {
+        address someToken = address(new ERC20("Some Token", "ST", 18));
+
+        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(someToken, _owner, _spender, 1000, 0, _deadline, _skOwner);
+
+        // Using permit with unintended verifier should fail.
+        vm.expectRevert("ERC20:P:INVALID_SIGNATURE");
+        _user.erc20_permit(address(_token), _owner, _spender, 1000, _deadline, v, r, s);
     }
 
     function test_permit_badS() external {
-        uint256 amount = 10 * WAD;
-        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, _owner, _skOwner, _deadline);
+        ( uint8 v, bytes32 r, ) = _getValidPermitSignature(address(_token), _owner, _spender, 1000, 0, _deadline, _skOwner);
 
         // Send in an s that is above the upper bound.
         bytes32 badS = bytes32(S_VALUE_INCLUSIVE_UPPER_BOUND + 1);
         vm.expectRevert("ERC20:P:MALLEABLE");
-        _user.erc20_permit(address(_token), _owner, _spender, amount, _deadline, v, r, badS);
-
-        _user.erc20_permit(address(_token), _owner, _spender, amount, _deadline, v, r, s);
+        _user.erc20_permit(address(_token), _owner, _spender, 1000, _deadline, v, r, badS);
     }
 
     function test_permit_badV() external {
-        uint256 amount = 10 * WAD;
-
         // Get valid signature. The `v` value is the expected v value that will cause `permit` to succeed, and must be 27 or 28.
         // Any other value should fail.
         // If v is 27, then 28 should make it past the MALLEABLE require, but should result in an invalid signature, and vice versa when v is 28.
-        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(amount, _owner, _skOwner, _deadline);
+        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(address(_token), _owner, _spender, 1000, 0, _deadline, _skOwner);
 
         for (uint8 i; i <= type(uint8).max; i++) {
             if (i == type(uint8).max) {
@@ -324,26 +344,24 @@ contract ERC20PermitTest is TestUtils {
                 vm.expectRevert("ERC20:P:INVALID_SIGNATURE");
             }
 
-            _user.erc20_permit(address(_token), _owner, _spender, amount, _deadline, i, r, s);
+            _user.erc20_permit(address(_token), _owner, _spender, 1000, _deadline, i, r, s);
         }
-
-        _user.erc20_permit(address(_token), _owner, _spender, amount, _deadline, v, r, s);
     }
 
     // Returns an ERC-2612 `permit` digest for the `owner` to sign
-    function _getDigest(address owner_, address spender_, uint256 amount_, uint256 nonce_, uint256 deadline_) internal view returns (bytes32 digest_) {
+    function _getDigest(address token_, address owner_, address spender_, uint256 amount_, uint256 nonce_, uint256 deadline_) internal view returns (bytes32 digest_) {
         return keccak256(
             abi.encodePacked(
                 '\x19\x01',
-                _token.DOMAIN_SEPARATOR(),
-                keccak256(abi.encode(_token.PERMIT_TYPEHASH(), owner_, spender_, amount_, nonce_, deadline_))
+                IERC20(token_).DOMAIN_SEPARATOR(),
+                keccak256(abi.encode(IERC20(token_).PERMIT_TYPEHASH(), owner_, spender_, amount_, nonce_, deadline_))
             )
         );
     }
 
     // Returns a valid `permit` signature signed by this contract's `owner` address
-    function _getValidPermitSignature(uint256 amount_, address owner_, uint256 ownerSk_, uint256 deadline_) internal returns (uint8 v_, bytes32 r_, bytes32 s_) {
-        return vm.sign(ownerSk_, _getDigest(owner_, _spender, amount_, _nonce, deadline_));
+    function _getValidPermitSignature(address token_, address owner_, address spender_, uint256 amount_, uint256 nonce_, uint256 deadline_, uint256 ownerSk_) internal returns (uint8 v_, bytes32 r_, bytes32 s_) {
+        return vm.sign(ownerSk_, _getDigest(token_, owner_, spender_, amount_, nonce_, deadline_));
     }
 
 }

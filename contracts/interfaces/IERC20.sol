@@ -133,9 +133,9 @@ interface IERC20 {
 
     /**
      *  @dev    Returns the permit type hash.
-     *  @return permitTypeHash_ The permit type hash.
+     *  @return permitTypehash_ The permit type hash.
      */
-    function PERMIT_TYPEHASH() external view returns (bytes32 permitTypeHash_);
+    function PERMIT_TYPEHASH() external view returns (bytes32 permitTypehash_);
 
     /**
      *  @dev    Returns the symbol of the token.
