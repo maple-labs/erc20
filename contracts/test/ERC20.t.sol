@@ -26,7 +26,7 @@ contract ERC20BaseTest is TestUtils {
         assertEq(_token.decimals(), 18);
     }
 
-    function test_metadata(string memory name_, string memory symbol_, uint8 decimals_) external {
+    function testFuzz_metadata(string memory name_, string memory symbol_, uint8 decimals_) external {
         MockERC20 mockToken = new MockERC20(name_, symbol_, decimals_);
 
         assertEq(mockToken.name(),     name_);
@@ -34,14 +34,14 @@ contract ERC20BaseTest is TestUtils {
         assertEq(mockToken.decimals(), decimals_);
     }
 
-    function test_mint(address account_, uint256 amount_) external {
+    function testFuzz_mint(address account_, uint256 amount_) external {
         _token.mint(account_, amount_);
 
         assertEq(_token.totalSupply(),       amount_);
         assertEq(_token.balanceOf(account_), amount_);
     }
 
-    function test_burn(address account_, uint256 amount0_, uint256 amount1_) external {
+    function testFuzz_burn(address account_, uint256 amount0_, uint256 amount1_) external {
         if (amount1_ > amount0_) return;  // Mint amount must exceed burn amount.
 
         _token.mint(account_, amount0_);
@@ -51,13 +51,13 @@ contract ERC20BaseTest is TestUtils {
         assertEq(_token.balanceOf(account_), amount0_ - amount1_);
     }
 
-    function test_approve(address account_, uint256 amount_) external {
+    function testFuzz_approve(address account_, uint256 amount_) external {
         assertTrue(_token.approve(account_, amount_));
 
         assertEq(_token.allowance(self, account_), amount_);
     }
 
-    function test_increaseAllowance(address account_, uint256 initialAmount_, uint256 addedAmount_) external {
+    function testFuzz_increaseAllowance(address account_, uint256 initialAmount_, uint256 addedAmount_) external {
         initialAmount_ = constrictToRange(initialAmount_, 0, type(uint256).max / 2);
         addedAmount_   = constrictToRange(addedAmount_,   0, type(uint256).max / 2);
 
@@ -70,7 +70,7 @@ contract ERC20BaseTest is TestUtils {
         assertEq(_token.allowance(self, account_), initialAmount_ + addedAmount_);
     }
 
-    function test_decreaseAllowance(address account_, uint256 initialAmount_, uint256 subtractedAmount_) external {
+    function testFuzz_decreaseAllowance(address account_, uint256 initialAmount_, uint256 subtractedAmount_) external {
         initialAmount_    = constrictToRange(initialAmount_,    0, type(uint256).max);
         subtractedAmount_ = constrictToRange(subtractedAmount_, 0, initialAmount_);
 
@@ -83,7 +83,7 @@ contract ERC20BaseTest is TestUtils {
         assertEq(_token.allowance(self, account_), initialAmount_ - subtractedAmount_);
     }
 
-    function test_transfer(address account_, uint256 amount_) external {
+    function testFuzz_transfer(address account_, uint256 amount_) external {
         _token.mint(self, amount_);
 
         assertTrue(_token.transfer(account_, amount_));
@@ -98,7 +98,7 @@ contract ERC20BaseTest is TestUtils {
         }
     }
 
-    function test_transferFrom(address recipient_, uint256 approval_, uint256 amount_) external {
+    function testFuzz_transferFrom(address recipient_, uint256 approval_, uint256 amount_) external {
         if (amount_ > approval_) return;  // Owner must approve for more than amount.
 
         ERC20User owner = new ERC20User();
@@ -122,7 +122,7 @@ contract ERC20BaseTest is TestUtils {
         }
     }
 
-    function test_transfer_insufficientBalance(address recipient_, uint256 amount_) external {
+    function testFuzz_transfer_insufficientBalance(address recipient_, uint256 amount_) external {
         amount_ = amount_ == 0 ? 1 : amount_;
 
         ERC20User account = new ERC20User();
@@ -138,7 +138,7 @@ contract ERC20BaseTest is TestUtils {
         assertEq(_token.balanceOf(recipient_), amount_);
     }
 
-    function test_transferFrom_insufficientAllowance(address recipient_, uint256 amount_) external {
+    function testFuzz_transferFrom_insufficientAllowance(address recipient_, uint256 amount_) external {
         amount_ = amount_ == 0 ? 1 : amount_;
 
         ERC20User owner = new ERC20User();
@@ -156,7 +156,7 @@ contract ERC20BaseTest is TestUtils {
         assertEq(_token.balanceOf(recipient_), amount_);
     }
 
-    function test_transferFrom_insufficientBalance(address recipient_, uint256 amount_) external {
+    function testFuzz_transferFrom_insufficientBalance(address recipient_, uint256 amount_) external {
         amount_ = amount_ == 0 ? 1 : amount_;
 
         ERC20User owner = new ERC20User();
