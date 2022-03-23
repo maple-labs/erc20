@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.7;
+pragma solidity 0.8.7;
 
 import { IERC20 } from "../../interfaces/IERC20.sol";
 
@@ -24,12 +24,12 @@ contract ERC20User {
         IERC20(token_).permit(owner_, spender_, amount_, deadline_, v_, r_, s_);
     }
 
-    function erc20_transfer(address token_, address recipient_, uint256 amount_) external {
-        IERC20(token_).transfer(recipient_, amount_);
+    function erc20_transfer(address token_, address recipient_, uint256 amount_) external returns (bool success_) {
+        return IERC20(token_).transfer(recipient_, amount_);
     }
 
-    function erc20_transferFrom(address token_, address owner_, address recipient_, uint256 amount_) external {
-        IERC20(token_).transferFrom(owner_, recipient_, amount_);
+    function erc20_transferFrom(address token_, address owner_, address recipient_, uint256 amount_) external returns (bool success_) {
+        return IERC20(token_).transferFrom(owner_, recipient_, amount_);
     }
 
 }

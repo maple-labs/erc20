@@ -1,11 +1,20 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.7;
+pragma solidity 0.8.7;
 
 import { IERC20 } from "./interfaces/IERC20.sol";
 
+/*
+    ███████╗██████╗  ██████╗    ██████╗  ██████╗
+    ██╔════╝██╔══██╗██╔════╝    ╚════██╗██╔═████╗
+    █████╗  ██████╔╝██║          █████╔╝██║██╔██║
+    ██╔══╝  ██╔══██╗██║         ██╔═══╝ ████╔╝██║
+    ███████╗██║  ██║╚██████╗    ███████╗╚██████╔╝
+    ╚══════╝╚═╝  ╚═╝ ╚═════╝    ╚══════╝ ╚═════╝
+*/
+
 /**
- * @title Modern and gas efficient ERC-20 implementation.
- * @dev   Acknowledgements to Solmate, OpenZeppelin, and DSS for inspiring this code.
+ *  @title Modern ERC-20 implementation.
+ *  @dev   Acknowledgements to Solmate, OpenZeppelin, and DSS for inspiring this code.
  */
 contract ERC20 is IERC20 {
 
@@ -29,15 +38,14 @@ contract ERC20 is IERC20 {
     /****************/
 
     // PERMIT_TYPEHASH = keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
-    bytes32 public constant override PERMIT_TYPEHASH      = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
-    uint256 public constant S_VALUE_INCLUSIVE_UPPER_BOUND = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0;
+    bytes32 public constant override PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
 
-    mapping (address => uint256) public override nonces;
+    mapping(address => uint256) public override nonces;
 
     /**
-     * @param name_     The name of the token.
-     * @param symbol_   The symbol of the token.
-     * @param decimals_ The decimal precision used by the token.
+     *  @param name_     The name of the token.
+     *  @param symbol_   The symbol of the token.
+     *  @param decimals_ The decimal precision used by the token.
      */
     constructor(string memory name_, string memory symbol_, uint8 decimals_) {
         name     = name_;
@@ -64,27 +72,33 @@ contract ERC20 is IERC20 {
         return true;
     }
 
-    function permit(address owner, address spender, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external override {
-        require(deadline >= block.timestamp, "ERC20:P:EXPIRED");
+    function permit(address owner_, address spender_, uint256 amount_, uint256 deadline_, uint8 v_, bytes32 r_, bytes32 s_) external override {
+        require(deadline_ >= block.timestamp, "ERC20:P:EXPIRED");
 
         // Appendix F in the Ethereum Yellow paper (https://ethereum.github.io/yellowpaper/paper.pdf), defines
         // the valid range for s in (301): 0 < s < secp256k1n ÷ 2 + 1, and for v in (302): v ∈ {27, 28}.
-        require(uint256(s) <= S_VALUE_INCLUSIVE_UPPER_BOUND && (v == 27 || v == 28), "ERC20:P:MALLEABLE");
-        
+        require(
+            uint256(s_) <= uint256(0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0) &&
+            (v_ == 27 || v_ == 28),
+            "ERC20:P:MALLEABLE"
+        );
+
         // Nonce realistically cannot overflow.
         unchecked {
             bytes32 digest = keccak256(
                 abi.encodePacked(
                     "\x19\x01",
                     DOMAIN_SEPARATOR(),
-                    keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, amount, nonces[owner]++, deadline))
+                    keccak256(abi.encode(PERMIT_TYPEHASH, owner_, spender_, amount_, nonces[owner_]++, deadline_))
                 )
             );
-            address recoveredAddress = ecrecover(digest, v, r, s);
-            require(recoveredAddress == owner && owner != address(0), "ERC20:P:INVALID_SIGNATURE");
+
+            address recoveredAddress = ecrecover(digest, v_, r_, s_);
+
+            require(recoveredAddress == owner_ && owner_ != address(0), "ERC20:P:INVALID_SIGNATURE");
         }
-        
-        _approve(owner, spender, amount);
+
+        _approve(owner_, spender_, amount_);
     }
 
     function transfer(address recipient_, uint256 amount_) external override returns (bool success_) {
@@ -126,10 +140,8 @@ contract ERC20 is IERC20 {
         balanceOf[owner_] -= amount_;
 
         // Cannot underflow because a user's balance will never be larger than the total supply.
-        unchecked {
-            totalSupply -= amount_;
-        }
-        
+        unchecked { totalSupply -= amount_; }
+
         emit Transfer(owner_, address(0), amount_);
     }
 
@@ -137,9 +149,7 @@ contract ERC20 is IERC20 {
         totalSupply += amount_;
 
         // Cannot overflow because totalSupply would first overflow in the statement above.
-        unchecked {
-            balanceOf[recipient_] += amount_;
-        }
+        unchecked { balanceOf[recipient_] += amount_; }
 
         emit Transfer(address(0), recipient_, amount_);
     }
@@ -148,9 +158,7 @@ contract ERC20 is IERC20 {
         balanceOf[owner_] -= amount_;
 
         // Cannot overflow because minting prevents overflow of totalSupply, and sum of user balances == totalSupply.
-        unchecked {
-            balanceOf[recipient_] += amount_;
-        }
+        unchecked { balanceOf[recipient_] += amount_; }
 
         emit Transfer(owner_, recipient_, amount_);
     }
