@@ -72,8 +72,21 @@ contract ERC20BaseTest is TestUtils {
         assertEq(_token.allowance(self, account_), initialAmount_ + addedAmount_);
     }
 
-    function testFuzz_decreaseAllowance(address account_, uint256 initialAmount_, uint256 subtractedAmount_) public {
-        initialAmount_    = constrictToRange(initialAmount_,    0, type(uint256).max);
+    function testFuzz_decreaseAllowance_infiniteApproval(address account_, uint256 subtractedAmount_) public {
+        uint256 infinite = type(uint256).max;
+        subtractedAmount_ = constrictToRange(subtractedAmount_, 0, infinite);
+
+        _token.approve(account_, infinite);
+
+        assertEq(_token.allowance(self, account_), infinite);
+
+        assertTrue(_token.decreaseAllowance(account_, subtractedAmount_));
+
+        assertEq(_token.allowance(self, account_), infinite);
+    }
+
+        function testFuzz_decreaseAllowance(address account_, uint256 initialAmount_, uint256 subtractedAmount_) public {
+        initialAmount_    = constrictToRange(initialAmount_,    0, type(uint256).max - 1);
         subtractedAmount_ = constrictToRange(subtractedAmount_, 0, initialAmount_);
 
         _token.approve(account_, initialAmount_);
@@ -101,6 +114,8 @@ contract ERC20BaseTest is TestUtils {
     }
 
     function testFuzz_transferFrom(address recipient_, uint256 approval_, uint256 amount_) public {
+        approval_ = constrictToRange(approval_, 0, type(uint256).max - 1);
+        amount_   = constrictToRange(amount_,   0, type(uint256).max - 1);
         if (amount_ > approval_) return;  // Owner must approve for more than amount.
 
         ERC20User owner = new ERC20User();
@@ -115,6 +130,30 @@ contract ERC20BaseTest is TestUtils {
         approval_ = address(owner) == self ? approval_ : approval_ - amount_;
 
         assertEq(_token.allowance(address(owner), self), approval_);
+
+        if (address(owner) == recipient_) {
+            assertEq(_token.balanceOf(address(owner)), amount_);
+        } else {
+            assertEq(_token.balanceOf(address(owner)), 0);
+            assertEq(_token.balanceOf(recipient_), amount_);
+        }
+    }
+
+    function testFuzz_transferFrom_infiniteApproval(address recipient_, uint256 amount_) public {
+        amount_                  = constrictToRange(amount_,   0, type(uint256).max);
+        uint256 infiniteApproval = type(uint256).max;
+        if (amount_ > infiniteApproval) return;  // Owner must approve for more than amount.
+
+        ERC20User owner = new ERC20User();
+
+        _token.mint(address(owner), amount_);
+        owner.erc20_approve(address(_token), self, infiniteApproval);
+
+        assertTrue(_token.transferFrom(address(owner), recipient_, amount_));
+
+        assertEq(_token.totalSupply(), amount_);
+
+        assertEq(_token.allowance(address(owner), self), infiniteApproval);
 
         if (address(owner) == recipient_) {
             assertEq(_token.balanceOf(address(owner)), amount_);
