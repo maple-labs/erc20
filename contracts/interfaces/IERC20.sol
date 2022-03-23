@@ -9,7 +9,7 @@ interface IERC20 {
     /**************/
 
     /**
-     *  @dev   Emits an event indicating that one account has set the allowance of another account over their tokens.
+     *  @dev   Emitted when one account has set the allowance of another account over their tokens.
      *  @param owner_   Account that tokens are approved from.
      *  @param spender_ Account that tokens are approved for.
      *  @param amount_  Amount of tokens that have been approved.
@@ -17,7 +17,7 @@ interface IERC20 {
     event Approval(address indexed owner_, address indexed spender_, uint256 amount_);
 
     /**
-     *  @dev   Emits an event indicating that tokens have moved from one account to another.
+     *  @dev   Emitted when tokens have moved from one account to another.
      *  @param owner_     Account that tokens have moved from.
      *  @param recipient_ Account that tokens have moved to.
      *  @param amount_    Amount of tokens that have been transferred.
@@ -126,10 +126,10 @@ interface IERC20 {
 
     /**
       *  @dev    Returns the nonce for the given owner.
-      *  @param  owner  The address of the owner account.
+      *  @param  owner_  The address of the owner account.
       *  @return nonce_ The nonce for the given owner.
      */
-    function nonces(address owner) external view returns (uint256 nonce_);
+    function nonces(address owner_) external view returns (uint256 nonce_);
 
     /**
      *  @dev    Returns the permit type hash.
