@@ -202,7 +202,7 @@ contract ERC20PermitTest is TestUtils {
     }
 
     function test_typehash() external {
-        assertEq(token.PERMIT_TYPEHASH(), keccak256("Permit(address owner,address spender,uint256 amount,uint256 nonce,uint256 deadline)"));
+        assertEq(token.PERMIT_TYPEHASH(), keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"));
     }
 
     // NOTE: Virtual so inheriting tests can override with different DOMAIN_SEPARATORs because of different addresses
