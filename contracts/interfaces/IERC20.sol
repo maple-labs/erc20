@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.7;
+pragma solidity 0.8.7;
 
 /// @title Interface of the ERC20 standard as defined in the EIP, including EIP-2612 permit functionality.
 interface IERC20 {
