@@ -73,19 +73,20 @@ contract ERC20BaseTest is TestUtils {
     }
 
     function testFuzz_decreaseAllowance_infiniteApproval(address account_, uint256 subtractedAmount_) public {
-        uint256 infinite = type(uint256).max;
-        subtractedAmount_ = constrictToRange(subtractedAmount_, 0, infinite);
+        uint256 MAX_UINT256 = type(uint256).max;
 
-        _token.approve(account_, infinite);
+        subtractedAmount_ = constrictToRange(subtractedAmount_, 0, MAX_UINT256);
 
-        assertEq(_token.allowance(self, account_), infinite);
+        _token.approve(account_, MAX_UINT256);
+
+        assertEq(_token.allowance(self, account_), MAX_UINT256);
 
         assertTrue(_token.decreaseAllowance(account_, subtractedAmount_));
 
-        assertEq(_token.allowance(self, account_), infinite);
+        assertEq(_token.allowance(self, account_), MAX_UINT256);
     }
 
-        function testFuzz_decreaseAllowance(address account_, uint256 initialAmount_, uint256 subtractedAmount_) public {
+    function testFuzz_decreaseAllowance_nonInfiniteApproval(address account_, uint256 initialAmount_, uint256 subtractedAmount_) public {
         initialAmount_    = constrictToRange(initialAmount_,    0, type(uint256).max - 1);
         subtractedAmount_ = constrictToRange(subtractedAmount_, 0, initialAmount_);
 
@@ -139,19 +140,23 @@ contract ERC20BaseTest is TestUtils {
     }
 
     function testFuzz_transferFrom_infiniteApproval(address recipient_, uint256 amount_) public {
-        amount_                  = constrictToRange(amount_,   0, type(uint256).max);
-        uint256 infiniteApproval = type(uint256).max;
+        uint256 MAX_UINT256 = type(uint256).max;
 
+        amount_ = constrictToRange(amount_, 0, MAX_UINT256);
 
         ERC20User owner = new ERC20User();
 
         _token.mint(address(owner), amount_);
-        owner.erc20_approve(address(_token), self, infiniteApproval);
+        owner.erc20_approve(address(_token), self, MAX_UINT256);
+
+        assertEq(_token.balanceOf(address(owner)),       amount_);
+        assertEq(_token.totalSupply(),                   amount_);
+        assertEq(_token.allowance(address(owner), self), MAX_UINT256);
 
         assertTrue(_token.transferFrom(address(owner), recipient_, amount_));
 
         assertEq(_token.totalSupply(),                   amount_);
-        assertEq(_token.allowance(address(owner), self), infiniteApproval);
+        assertEq(_token.allowance(address(owner), self), MAX_UINT256);
 
         if (address(owner) == recipient_) {
             assertEq(_token.balanceOf(address(owner)), amount_);
