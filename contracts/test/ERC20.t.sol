@@ -115,8 +115,7 @@ contract ERC20BaseTest is TestUtils {
 
     function testFuzz_transferFrom(address recipient_, uint256 approval_, uint256 amount_) public {
         approval_ = constrictToRange(approval_, 0, type(uint256).max - 1);
-        amount_   = constrictToRange(amount_,   0, type(uint256).max - 1);
-        if (amount_ > approval_) return;  // Owner must approve for more than amount.
+        amount_   = constrictToRange(amount_,   0, approval_);
 
         ERC20User owner = new ERC20User();
 
@@ -142,7 +141,7 @@ contract ERC20BaseTest is TestUtils {
     function testFuzz_transferFrom_infiniteApproval(address recipient_, uint256 amount_) public {
         amount_                  = constrictToRange(amount_,   0, type(uint256).max);
         uint256 infiniteApproval = type(uint256).max;
-        if (amount_ > infiniteApproval) return;  // Owner must approve for more than amount.
+
 
         ERC20User owner = new ERC20User();
 
@@ -151,15 +150,14 @@ contract ERC20BaseTest is TestUtils {
 
         assertTrue(_token.transferFrom(address(owner), recipient_, amount_));
 
-        assertEq(_token.totalSupply(), amount_);
-
+        assertEq(_token.totalSupply(),                   amount_);
         assertEq(_token.allowance(address(owner), self), infiniteApproval);
 
         if (address(owner) == recipient_) {
             assertEq(_token.balanceOf(address(owner)), amount_);
         } else {
             assertEq(_token.balanceOf(address(owner)), 0);
-            assertEq(_token.balanceOf(recipient_), amount_);
+            assertEq(_token.balanceOf(recipient_),     amount_);
         }
     }
 
