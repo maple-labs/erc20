@@ -63,7 +63,7 @@ contract ERC20 is IERC20 {
     }
 
     function decreaseAllowance(address spender_, uint256 subtractedAmount_) external override returns (bool success_) {
-        _approve(msg.sender, spender_, allowance[msg.sender][spender_] - subtractedAmount_);
+        _decreaseAllowance(msg.sender, spender_, subtractedAmount_);
         return true;
     }
 
@@ -107,7 +107,7 @@ contract ERC20 is IERC20 {
     }
 
     function transferFrom(address owner_, address recipient_, uint256 amount_) external override returns (bool success_) {
-        _approve(owner_, msg.sender, allowance[owner_][msg.sender] - amount_);
+        _decreaseAllowance(owner_, msg.sender, amount_);
         _transfer(owner_, recipient_, amount_);
         return true;
     }
@@ -143,6 +143,14 @@ contract ERC20 is IERC20 {
         unchecked { totalSupply -= amount_; }
 
         emit Transfer(owner_, address(0), amount_);
+    }
+
+    function _decreaseAllowance(address owner_, address spender_, uint256 subtractedAmount_) internal {
+        uint256 spenderAllowance = allowance[owner_][spender_];  // Cache to memory.
+
+        if (spenderAllowance != type(uint256).max) {
+            _approve(owner_, spender_, spenderAllowance - subtractedAmount_);
+        }
     }
 
     function _mint(address recipient_, uint256 amount_) internal {
