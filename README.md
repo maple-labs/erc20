@@ -2,8 +2,6 @@
 
 ![Foundry CI](https://github.com/maple-labs/erc20/actions/workflows/push-to-main.yml/badge.svg) [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
-**DISCLAIMER: This code has NOT been externally audited and is actively being developed. Please do not use in production without taking the appropriate steps to ensure maximum security.**
-
 Basic ERC-20 contract designed to be inherited and extended. Leveraging native overflow checks in solc 0.8 to simplify ERC-20 implementation. It should be noted that this ERC-20 implementation does not include some functionality that is commonly used in other tokens, such as:
 - `address(0)` checks on `_transfer`
 - `push`
@@ -25,6 +23,22 @@ These contracts were inspired by and/or directly modified from the following sou
 - [Solmate](https://github.com/Rari-Capital/solmate)
 - [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts)
 - [DSS](https://github.com/makerdao/dss)
+
+## Audit Reports
+| Auditor | Report link |
+|---|---|
+| Trail of Bits | [ToB Report - March 14, 2022](https://docs.google.com/viewer?url=https://github.com/maple-labs/maple-core/files/8507237/Maple.Finance.-.Final.Report.-.Fixes.pdf) |
+| Code 4rena | [C4 Report - March 14, 2022](https://code4rena.com/reports/2022-03-maple/) |
+
+## Bug Bounty
+
+For all information related to the ongoing bug bounty for these contracts run by [Immunefi](https://immunefi.com/), please visit this [site](https://immunefi.com/bounty/maple/). 
+
+| Severity of Finding | Payout |
+|---|---|
+| Critical | $50,000 |
+| High | $25,000 |
+| Medium | $1,000 |
 
 ## About Maple
 Maple is a decentralized corporate credit market. Maple provides capital to institutional borrowers through globally accessible fixed-income yield opportunities.
