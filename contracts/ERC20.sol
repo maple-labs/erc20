@@ -57,22 +57,22 @@ contract ERC20 is IERC20 {
     /*** External Functions ***/
     /**************************/
 
-    function approve(address spender_, uint256 amount_) external override returns (bool success_) {
+    function approve(address spender_, uint256 amount_) public virtual override returns (bool success_) {
         _approve(msg.sender, spender_, amount_);
         return true;
     }
 
-    function decreaseAllowance(address spender_, uint256 subtractedAmount_) external override returns (bool success_) {
+    function decreaseAllowance(address spender_, uint256 subtractedAmount_) public virtual override returns (bool success_) {
         _decreaseAllowance(msg.sender, spender_, subtractedAmount_);
         return true;
     }
 
-    function increaseAllowance(address spender_, uint256 addedAmount_) external override returns (bool success_) {
+    function increaseAllowance(address spender_, uint256 addedAmount_) public virtual override returns (bool success_) {
         _approve(msg.sender, spender_, allowance[msg.sender][spender_] + addedAmount_);
         return true;
     }
 
-    function permit(address owner_, address spender_, uint256 amount_, uint256 deadline_, uint8 v_, bytes32 r_, bytes32 s_) external override {
+    function permit(address owner_, address spender_, uint256 amount_, uint256 deadline_, uint8 v_, bytes32 r_, bytes32 s_) public virtual override {
         require(deadline_ >= block.timestamp, "ERC20:P:EXPIRED");
 
         // Appendix F in the Ethereum Yellow paper (https://ethereum.github.io/yellowpaper/paper.pdf), defines
@@ -101,12 +101,12 @@ contract ERC20 is IERC20 {
         _approve(owner_, spender_, amount_);
     }
 
-    function transfer(address recipient_, uint256 amount_) external override returns (bool success_) {
+    function transfer(address recipient_, uint256 amount_) public virtual override returns (bool success_) {
         _transfer(msg.sender, recipient_, amount_);
         return true;
     }
 
-    function transferFrom(address owner_, address recipient_, uint256 amount_) external override returns (bool success_) {
+    function transferFrom(address owner_, address recipient_, uint256 amount_) public virtual override returns (bool success_) {
         _decreaseAllowance(owner_, msg.sender, amount_);
         _transfer(owner_, recipient_, amount_);
         return true;
