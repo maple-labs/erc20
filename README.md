@@ -32,7 +32,7 @@ These contracts were inspired by and/or directly modified from the following sou
 
 ## Bug Bounty
 
-For all information related to the ongoing bug bounty for these contracts run by [Immunefi](https://immunefi.com/), please visit this [site](https://immunefi.com/bounty/maple/). 
+For all information related to the ongoing bug bounty for these contracts run by [Immunefi](https://immunefi.com/), please visit this [site](https://immunefi.com/bounty/maple/).
 
 | Severity of Finding | Payout |
 |---|---|
@@ -48,5 +48,5 @@ For all technical documentation related to the Maple protocol, please refer to t
 ---
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/44272939/116272804-33e78d00-a74f-11eb-97ab-77b7e13dc663.png" height="100" />
+  <img src="https://user-images.githubusercontent.com/44272939/196706799-fe96d294-f700-41e7-a65f-2d754d0a6eac.gif" height="100" />
 </p>
