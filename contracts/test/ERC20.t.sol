@@ -253,7 +253,7 @@ contract ERC20PermitTest is TestUtils {
 
     // NOTE: Virtual so inheriting tests can override with different DOMAIN_SEPARATORs because of different addresses
     function test_domainSeparator() public virtual {
-        assertEq(_token.DOMAIN_SEPARATOR(), 0x7f4681895eb6ce41bc811550fad44795dea5864bd3dae6ec316c91717b37313c);
+        assertEq(_token.DOMAIN_SEPARATOR(), 0x4b8187b77163c02c27b65aa9de86b76c6e4e236f6432e5656ec164ea1e87ba87);
     }
 
     function test_initialState() public {
