@@ -34,16 +34,11 @@ These contracts were inspired by and/or directly modified from the following sou
 
 For all information related to the ongoing bug bounty for these contracts run by [Immunefi](https://immunefi.com/), please visit this [site](https://immunefi.com/bounty/maple/).
 
-| Severity of Finding | Payout |
-|---|---|
-| Critical | $50,000 |
-| High | $25,000 |
-| Medium | $1,000 |
 
 ## About Maple
 Maple is a decentralized corporate credit market. Maple provides capital to institutional borrowers through globally accessible fixed-income yield opportunities.
 
-For all technical documentation related to the Maple protocol, please refer to the GitHub [wiki](https://github.com/maple-labs/maple-core/wiki).
+For all technical documentation related to the Maple protocol, please refer to the GitHub [wiki](https://github.com/maple-labs/maple-core-v2/wiki).
 
 ---
 
