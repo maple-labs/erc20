@@ -265,7 +265,11 @@ contract ERC20PermitTest is TestUtils {
         uint256 startingNonce = _token.nonces(_owner);
         uint256 expectedNonce = startingNonce + 1;
 
-        ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(address(_token), _owner, _spender, amount_, startingNonce, _deadline, _skOwner);
+        (
+            uint8 v,
+            bytes32 r,
+            bytes32 s
+        ) = _getValidPermitSignature(address(_token), _owner, _spender, amount_, startingNonce, _deadline, _skOwner);
 
         _user.erc20_permit(address(_token), _owner, _spender, amount_, _deadline, v, r, s);
 
@@ -371,7 +375,8 @@ contract ERC20PermitTest is TestUtils {
     function test_permit_badV() public {
         // Get valid signature. The `v` value is the expected v value that will cause `permit` to succeed, and must be 27 or 28.
         // Any other value should fail.
-        // If v is 27, then 28 should make it past the MALLEABLE require, but should result in an invalid signature, and vice versa when v is 28.
+        // If v is 27, then 28 should make it past the MALLEABLE require, but should result in an invalid signature,
+        // and vice versa when v is 28.
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(address(_token), _owner, _spender, 1000, 0, _deadline, _skOwner);
 
         for (uint8 i; i <= type(uint8).max; i++) {
@@ -391,7 +396,9 @@ contract ERC20PermitTest is TestUtils {
     }
 
     // Returns an ERC-2612 `permit` digest for the `owner` to sign
-    function _getDigest(address token_, address owner_, address spender_, uint256 amount_, uint256 nonce_, uint256 deadline_) internal view returns (bytes32 digest_) {
+    function _getDigest(address token_, address owner_, address spender_, uint256 amount_, uint256 nonce_, uint256 deadline_)
+        internal view returns (bytes32 digest_)
+    {
         return keccak256(
             abi.encodePacked(
                 '\x19\x01',
@@ -402,7 +409,17 @@ contract ERC20PermitTest is TestUtils {
     }
 
     // Returns a valid `permit` signature signed by this contract's `owner` address
-    function _getValidPermitSignature(address token_, address owner_, address spender_, uint256 amount_, uint256 nonce_, uint256 deadline_, uint256 ownerSk_) internal returns (uint8 v_, bytes32 r_, bytes32 s_) {
+    function _getValidPermitSignature(
+        address token_,
+        address owner_,
+        address spender_,
+        uint256 amount_,
+        uint256 nonce_,
+        uint256 deadline_,
+        uint256 ownerSk_
+    )
+        internal returns (uint8 v_, bytes32 r_, bytes32 s_)
+    {
         return vm.sign(ownerSk_, _getDigest(token_, owner_, spender_, amount_, nonce_, deadline_));
     }
 
