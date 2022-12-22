@@ -54,7 +54,7 @@ contract ERC20 is IERC20 {
     }
 
     /**************************************************************************************************************************************/
-    /*** External Functions ***/
+    /*** External Functions                                                                                                             ***/
     /**************************************************************************************************************************************/
 
     function approve(address spender_, uint256 amount_) public virtual override returns (bool success_) {
@@ -87,7 +87,7 @@ contract ERC20 is IERC20 {
 
         // Nonce realistically cannot overflow.
         unchecked {
-            bytes32 digest = keccak256(
+            bytes32 digest_ = keccak256(
                 abi.encodePacked(
                     "\x19\x01",
                     DOMAIN_SEPARATOR(),
@@ -95,9 +95,9 @@ contract ERC20 is IERC20 {
                 )
             );
 
-            address recoveredAddress = ecrecover(digest, v_, r_, s_);
+            address recoveredAddress_ = ecrecover(digest_, v_, r_, s_);
 
-            require(recoveredAddress == owner_ && owner_ != address(0), "ERC20:P:INVALID_SIGNATURE");
+            require(recoveredAddress_ == owner_ && owner_ != address(0), "ERC20:P:INVALID_SIGNATURE");
         }
 
         _approve(owner_, spender_, amount_);
@@ -114,9 +114,9 @@ contract ERC20 is IERC20 {
         return true;
     }
 
-    /**********************/
-    /*** View Functions ***/
-    /**********************/
+    /**************************************************************************************************************************************/
+    /*** View Functions                                                                                                                 ***/
+    /**************************************************************************************************************************************/
 
     function DOMAIN_SEPARATOR() public view override returns (bytes32 domainSeparator_) {
         return keccak256(

@@ -24,9 +24,9 @@ interface IERC20 {
      */
     event Transfer(address indexed owner_, address indexed recipient_, uint256 amount_);
 
-    /**************************/
-    /*** External Functions ***/
-    /**************************/
+    /**************************************************************************************************************************************/
+    /*** External Functions                                                                                                             ***/
+    /**************************************************************************************************************************************/
 
     /**
      *  @dev    Function that allows one account to set the allowance of another account over their tokens.
@@ -87,9 +87,9 @@ interface IERC20 {
      */
     function transferFrom(address owner_, address recipient_, uint256 amount_) external returns (bool success_);
 
-    /**********************/
-    /*** View Functions ***/
-    /**********************/
+    /**************************************************************************************************************************************/
+    /*** View Functions                                                                                                                 ***/
+    /**************************************************************************************************************************************/
 
     /**
      *  @dev    Returns the allowance that one account has given another over their tokens.

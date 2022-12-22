@@ -46,7 +46,6 @@ These contracts were inspired by and/or directly modified from the following sou
 
 For all information related to the ongoing bug bounty for these contracts run by [Immunefi](https://immunefi.com/), please visit this [site](https://immunefi.com/bounty/maple/).
 
-
 ## About Maple
 Maple is a decentralized corporate credit market. Maple provides capital to institutional borrowers through globally accessible fixed-income yield opportunities.
 
