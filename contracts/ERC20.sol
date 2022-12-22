@@ -18,9 +18,9 @@ import { IERC20 } from "./interfaces/IERC20.sol";
  */
 contract ERC20 is IERC20 {
 
-    /**************/
-    /*** ERC-20 ***/
-    /**************/
+    /**************************************************************************************************************************************/
+    /*** ERC-20                                                                                                                         ***/
+    /**************************************************************************************************************************************/
 
     string public override name;
     string public override symbol;
@@ -33,9 +33,9 @@ contract ERC20 is IERC20 {
 
     mapping(address => mapping(address => uint256)) public override allowance;
 
-    /****************/
-    /*** ERC-2612 ***/
-    /****************/
+    /**************************************************************************************************************************************/
+    /*** ERC-2612                                                                                                                       ***/
+    /**************************************************************************************************************************************/
 
     // PERMIT_TYPEHASH = keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
     bytes32 public constant override PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
@@ -53,9 +53,9 @@ contract ERC20 is IERC20 {
         decimals = decimals_;
     }
 
-    /**************************/
+    /**************************************************************************************************************************************/
     /*** External Functions ***/
-    /**************************/
+    /**************************************************************************************************************************************/
 
     function approve(address spender_, uint256 amount_) public virtual override returns (bool success_) {
         _approve(msg.sender, spender_, amount_);
@@ -72,7 +72,9 @@ contract ERC20 is IERC20 {
         return true;
     }
 
-    function permit(address owner_, address spender_, uint256 amount_, uint256 deadline_, uint8 v_, bytes32 r_, bytes32 s_) public virtual override {
+    function permit(address owner_, address spender_, uint256 amount_, uint256 deadline_, uint8 v_, bytes32 r_, bytes32 s_)
+        public virtual override
+    {
         require(deadline_ >= block.timestamp, "ERC20:P:EXPIRED");
 
         // Appendix F in the Ethereum Yellow paper (https://ethereum.github.io/yellowpaper/paper.pdf), defines
@@ -128,9 +130,9 @@ contract ERC20 is IERC20 {
         );
     }
 
-    /**************************/
-    /*** Internal Functions ***/
-    /**************************/
+    /**************************************************************************************************************************************/
+    /*** Internal Functions                                                                                                             ***/
+    /**************************************************************************************************************************************/
 
     function _approve(address owner_, address spender_, uint256 amount_) internal {
         emit Approval(owner_, spender_, allowance[owner_][spender_] = amount_);

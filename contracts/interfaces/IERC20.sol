@@ -4,9 +4,9 @@ pragma solidity ^0.8.7;
 /// @title Interface of the ERC20 standard as defined in the EIP, including EIP-2612 permit functionality.
 interface IERC20 {
 
-    /**************/
-    /*** Events ***/
-    /**************/
+    /**************************************************************************************************************************************/
+    /*** Events                                                                                                                         ***/
+    /**************************************************************************************************************************************/
 
     /**
      *  @dev   Emitted when one account has set the allowance of another account over their tokens.
