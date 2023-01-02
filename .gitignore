@@ -6,3 +6,4 @@ docs/*
 metadata.json
 /out
 /cache
+.git/
