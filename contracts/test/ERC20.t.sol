@@ -243,7 +243,7 @@ contract ERC20PermitTest is TestUtils {
 
         vm.warp(_deadline - 52 weeks);
 
-        _token = new ERC20("Maple Token", "MPL", 18);
+        _token = new MockERC20("Maple Token", "MPL", 18);
         _user  = new ERC20User();
     }
 
@@ -354,7 +354,7 @@ contract ERC20PermitTest is TestUtils {
     }
 
     function test_permit_differentVerifier() public {
-        address someToken = address(new ERC20("Some Token", "ST", 18));
+        address someToken = address(new MockERC20("Some Token", "ST", 18));
 
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(someToken, _owner, _spender, 1000, 0, _deadline, _skOwner);
 

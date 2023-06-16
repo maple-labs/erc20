@@ -16,7 +16,7 @@ import { IERC20 } from "./interfaces/IERC20.sol";
  *  @title Modern ERC-20 implementation.
  *  @dev   Acknowledgements to Solmate, OpenZeppelin, and DSS for inspiring this code.
  */
-contract ERC20 is IERC20 {
+abstract contract ERC20 is IERC20 {
 
     /**************************************************************************************************************************************/
     /*** ERC-20                                                                                                                         ***/
@@ -25,7 +25,7 @@ contract ERC20 is IERC20 {
     string public override name;
     string public override symbol;
 
-    uint8 public immutable override decimals;
+    uint8 public override decimals;
 
     uint256 public override totalSupply;
 
@@ -41,17 +41,6 @@ contract ERC20 is IERC20 {
     bytes32 public constant override PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
 
     mapping(address => uint256) public override nonces;
-
-    /**
-     *  @param name_     The name of the token.
-     *  @param symbol_   The symbol of the token.
-     *  @param decimals_ The decimal precision used by the token.
-     */
-    constructor(string memory name_, string memory symbol_, uint8 decimals_) {
-        name     = name_;
-        symbol   = symbol_;
-        decimals = decimals_;
-    }
 
     /**************************************************************************************************************************************/
     /*** External Functions                                                                                                             ***/
