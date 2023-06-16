@@ -5,8 +5,6 @@ import { InvariantTest, TestUtils } from "../../modules/contract-test-utils/cont
 
 import { IERC20 } from "../interfaces/IERC20.sol";
 
-import { ERC20 } from "../ERC20.sol";
-
 import { ERC20User } from "./accounts/ERC20User.sol";
 import { MockERC20 } from "./mocks/MockERC20.sol";
 
@@ -234,7 +232,7 @@ contract ERC20PermitTest is TestUtils {
     uint256 internal _nonce     = 0;
     uint256 internal _deadline  = 5_000_000_000;  // Timestamp far in the future
 
-    ERC20     internal _token;
+    MockERC20 internal _token;
     ERC20User internal _user;
 
     function setUp() public virtual {
@@ -243,7 +241,7 @@ contract ERC20PermitTest is TestUtils {
 
         vm.warp(_deadline - 52 weeks);
 
-        _token = new ERC20("Maple Token", "MPL", 18);
+        _token = new MockERC20("Maple Token", "MPL", 18);
         _user  = new ERC20User();
     }
 
@@ -354,7 +352,7 @@ contract ERC20PermitTest is TestUtils {
     }
 
     function test_permit_differentVerifier() public {
-        address someToken = address(new ERC20("Some Token", "ST", 18));
+        address someToken = address(new MockERC20("Some Token", "ST", 18));
 
         ( uint8 v, bytes32 r, bytes32 s ) = _getValidPermitSignature(someToken, _owner, _spender, 1000, 0, _deadline, _skOwner);
 
