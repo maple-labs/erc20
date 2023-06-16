@@ -16,16 +16,11 @@ import { IERC20 } from "./interfaces/IERC20.sol";
  *  @title Modern ERC-20 implementation.
  *  @dev   Acknowledgements to Solmate, OpenZeppelin, and DSS for inspiring this code.
  */
-abstract contract BaseERC20 is IERC20 {
+abstract contract ERC20Proxied is IERC20 {
 
     /**************************************************************************************************************************************/
     /*** ERC-20                                                                                                                         ***/
     /**************************************************************************************************************************************/
-
-    string public override name;
-    string public override symbol;
-
-    uint8 public override decimals;
 
     uint256 public override totalSupply;
 
@@ -41,6 +36,17 @@ abstract contract BaseERC20 is IERC20 {
     bytes32 public constant override PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
 
     mapping(address => uint256) public override nonces;
+
+
+    /**************************************************************************************************************************************/
+    /*** Overriding Functions                                                                                                           ***/
+    /**************************************************************************************************************************************/
+
+    function decimals() public view virtual override returns (uint8 decimals_);
+
+    function name() public view virtual override returns (string memory name_);
+
+    function symbol() public view virtual override returns (string memory symbol_);
 
     /**************************************************************************************************************************************/
     /*** External Functions                                                                                                             ***/
@@ -111,7 +117,7 @@ abstract contract BaseERC20 is IERC20 {
         return keccak256(
             abi.encode(
                 keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
-                keccak256(bytes(name)),
+                keccak256(bytes(name())),
                 keccak256(bytes("1")),
                 block.chainid,
                 address(this)
