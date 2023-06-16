@@ -16,7 +16,7 @@ import { IERC20 } from "./interfaces/IERC20.sol";
  *  @title Modern ERC-20 implementation.
  *  @dev   Acknowledgements to Solmate, OpenZeppelin, and DSS for inspiring this code.
  */
-abstract contract AbstractERC20 is IERC20 {
+contract BaseERC20 is IERC20 {
 
     /**************************************************************************************************************************************/
     /*** ERC-20                                                                                                                         ***/
