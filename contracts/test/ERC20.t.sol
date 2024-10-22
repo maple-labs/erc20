@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.7;
 
-import { InvariantTest, TestUtils } from "../../modules/contract-test-utils/contracts/test.sol";
+import { Test } from "../../modules/forge-std/src/Test.sol";
 
 import { IERC20 } from "../interfaces/IERC20.sol";
 
@@ -10,7 +10,7 @@ import { ERC20 } from "../ERC20.sol";
 import { ERC20User } from "./accounts/ERC20User.sol";
 import { MockERC20 } from "./mocks/MockERC20.sol";
 
-contract ERC20BaseTest is TestUtils {
+contract ERC20BaseTest is Test {
 
     address internal immutable self = address(this);
 
@@ -60,8 +60,8 @@ contract ERC20BaseTest is TestUtils {
     }
 
     function testFuzz_increaseAllowance(address account_, uint256 initialAmount_, uint256 addedAmount_) public {
-        initialAmount_ = constrictToRange(initialAmount_, 0, type(uint256).max / 2);
-        addedAmount_   = constrictToRange(addedAmount_,   0, type(uint256).max / 2);
+        initialAmount_ = bound(initialAmount_, 0, type(uint256).max / 2);
+        addedAmount_   = bound(addedAmount_,   0, type(uint256).max / 2);
 
         _token.approve(account_, initialAmount_);
 
@@ -75,7 +75,7 @@ contract ERC20BaseTest is TestUtils {
     function testFuzz_decreaseAllowance_infiniteApproval(address account_, uint256 subtractedAmount_) public {
         uint256 MAX_UINT256 = type(uint256).max;
 
-        subtractedAmount_ = constrictToRange(subtractedAmount_, 0, MAX_UINT256);
+        subtractedAmount_ = bound(subtractedAmount_, 0, MAX_UINT256);
 
         _token.approve(account_, MAX_UINT256);
 
@@ -87,8 +87,8 @@ contract ERC20BaseTest is TestUtils {
     }
 
     function testFuzz_decreaseAllowance_nonInfiniteApproval(address account_, uint256 initialAmount_, uint256 subtractedAmount_) public {
-        initialAmount_    = constrictToRange(initialAmount_,    0, type(uint256).max - 1);
-        subtractedAmount_ = constrictToRange(subtractedAmount_, 0, initialAmount_);
+        initialAmount_    = bound(initialAmount_,    0, type(uint256).max - 1);
+        subtractedAmount_ = bound(subtractedAmount_, 0, initialAmount_);
 
         _token.approve(account_, initialAmount_);
 
@@ -115,8 +115,8 @@ contract ERC20BaseTest is TestUtils {
     }
 
     function testFuzz_transferFrom(address recipient_, uint256 approval_, uint256 amount_) public {
-        approval_ = constrictToRange(approval_, 0, type(uint256).max - 1);
-        amount_   = constrictToRange(amount_,   0, approval_);
+        approval_ = bound(approval_, 0, type(uint256).max - 1);
+        amount_   = bound(amount_,   0, approval_);
 
         ERC20User owner = new ERC20User();
 
@@ -142,7 +142,7 @@ contract ERC20BaseTest is TestUtils {
     function testFuzz_transferFrom_infiniteApproval(address recipient_, uint256 amount_) public {
         uint256 MAX_UINT256 = type(uint256).max;
 
-        amount_ = constrictToRange(amount_, 0, MAX_UINT256);
+        amount_ = bound(amount_, 0, MAX_UINT256);
 
         ERC20User owner = new ERC20User();
 
@@ -219,7 +219,7 @@ contract ERC20BaseTest is TestUtils {
 
 }
 
-contract ERC20PermitTest is TestUtils {
+contract ERC20PermitTest is Test {
 
     bytes internal constant ARITHMETIC_ERROR = abi.encodeWithSignature("Panic(uint256)", 0x11);
 
@@ -425,14 +425,14 @@ contract ERC20PermitTest is TestUtils {
 
 }
 
-contract ERC20Invariants is TestUtils, InvariantTest {
+contract ERC20Invariants is Test {
 
     BalanceSum internal _balanceSum;
 
     function setUp() public {
         _balanceSum = new BalanceSum();
 
-        addTargetContract(address(_balanceSum));
+        targetContract(address(_balanceSum));
     }
 
     function invariant_balanceSum() public {
